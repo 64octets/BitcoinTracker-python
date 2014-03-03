@@ -1,0 +1,7 @@
+# Ignore Data files:
+
+*.txt
+
+# Ingore PyCharm files:
+
+.idea/
