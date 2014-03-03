@@ -10,8 +10,8 @@
 
 from chaco.api import ArrayPlotData, Plot
 from chaco.tools.api import PanTool, ZoomTool
+import datetime
 from enable.component_editor import ComponentEditor
-import math
 import numpy
 import re
 from traits.api import HasTraits, Instance
@@ -74,6 +74,16 @@ class PricePlot(HasTraits):
 
         plot.tools.append(PanTool(plot))        # Add Pan and Zoom abilities to the plot
         plot.tools.append(ZoomTool(plot))
+
+        plot.x_axis.tick_label_formatter = lambda tick: self._format_time(tick)      # Set formatter for time axis tick labels
+
+
+    def _format_time(self, time):
+        """
+        Method for taking the Unix timestamp in the time-series domain and converting it in to a human-readable format
+        """
+
+        return datetime.datetime.fromtimestamp(time).strftime("%m-%d %H:%M")
 
 
 
