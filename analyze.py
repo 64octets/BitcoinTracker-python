@@ -39,7 +39,11 @@ class PricePlot(HasTraits):
 
         plot = Plot(plot_data)
 
-        self._setup_plot(plot)
+        # Calculate range of plot so it shows latest 1 day of data
+        end = t[-1]
+        start = end - 86400
+
+        self._configure_plot(plot, start, end)
 
         buy_renderer = plot.plot(("t", "b"), type="scatter", color="red")[0]
         sell_renderer = plot.plot(("t", "s"), type="scatter", color="green")[0]
@@ -53,15 +57,18 @@ class PricePlot(HasTraits):
         sell_renderer.marker_size = 3
         sell_renderer.marker = "circle"
 
+        plot.title = "Current Price - Buy: ${} - Sell: ${}".format(buy[-1], sell[-1])       # Display current price in title
+
         self.plot = plot
 
 
-    def _setup_plot(self, plot):
+    def _configure_plot(self, plot, start, end):
         """
         Configures the appearance of the plot
         """
 
         plot.bgcolor = "black"
+        plot.title_color = "white"
 
         plot.y_axis.orientation = "right"
         plot.y_axis.tick_color = "white"
@@ -76,6 +83,12 @@ class PricePlot(HasTraits):
         plot.tools.append(ZoomTool(plot))
 
         plot.x_axis.tick_label_formatter = lambda tick: self._format_time(tick)      # Set formatter for time axis tick labels
+
+        r = plot.index_mapper.range         # Set range of index (x values i.e. domain)
+        r.low = start
+        r.high = end
+
+        plot.request_redraw()
 
 
     def _format_time(self, time):
