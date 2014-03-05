@@ -17,6 +17,13 @@ import re
 from traits.api import HasTraits, Instance
 from traitsui.api import Item, View
 
+# Define colors to be used by the  plots
+RED = (0.9, 0, 0)
+LIGHT_RED = (0.9, 0, 0, 0.8)
+
+GREEN = (0, 0.9, 0)
+LIGHT_GREEN = (0, 0.9, 0, 0.7)
+
 
 class PricePlot(HasTraits):
 
@@ -45,11 +52,17 @@ class PricePlot(HasTraits):
 
         self._configure_plot(plot, start, end)
 
-        buy_renderer = plot.plot(("t", "b"), type="scatter", color="red")[0]
-        sell_renderer = plot.plot(("t", "s"), type="scatter", color="green")[0]
+        # Scatter point for prices
+        buy_renderer = plot.plot(("t", "b"), type="scatter", color=RED)[0]
+        sell_renderer = plot.plot(("t", "s"), type="scatter", color=GREEN)[0]
 
-        plot.plot(("t", "wb"), type="line", color="red")
-        plot.plot(("t", "ws"), type="line", color="green")
+        # Line plot to connect the scatter points together
+        plot.plot(("t", "b"), type="line", color=LIGHT_RED)        # Using RGBA color tuple to get a lighter color
+        plot.plot(("t", "s"), type="line", color=LIGHT_GREEN)
+
+        # Line plot of moving average of prices (thicker to indicate this fact)
+        plot.plot(("t", "wb"), type="line", color=RED, line_width=2)
+        plot.plot(("t", "ws"), type="line", color=GREEN, line_width=2)
 
         buy_renderer.marker_size = 3
         buy_renderer.marker = "circle"
@@ -133,8 +146,8 @@ def weighted_running_average(series, N, weighing_function = None):
 
 if __name__ == '__main__':
 
-    # Define the weighted sum sampling window to be 3 hours: i.e. the number of 5 min intervals in 3 hours
-    N = 3 * 12
+    # Define the weighted sum sampling window to be 1 hours: i.e. the number of 5 min intervals in 1 hours
+    N = 1 * 12
 
     # Exponential weighing factor:          (The larger the factor the more effect old values have on the average)
     FACTOR = 1.0 / 1e3
