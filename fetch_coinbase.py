@@ -19,22 +19,21 @@
 # Author: Abid H. Mujtaba
 # Date: 2014-02-25
 #
-# This script fetches data from the BitStamp backedn API and prints it to stdout
+# This script fetches data from the coinbase.com backedn API and prints it to stdout
 
 import urllib2
 import json
 import time
 
-
-TICKER_URL = "https://www.bitstamp.net/api/ticker/"
+BUY_URL = "https://coinbase.com/api/v1/prices/buy"
+SELL_URL = "https://coinbase.com/api/v1/prices/sell"
 
 
 def main():
 
-    data = json.load(urllib2.urlopen(TICKER_URL))
+    buy = json.load(urllib2.urlopen(BUY_URL))['total']['amount']
 
-    buy = data["ask"]
-    sell = data["bid"]
+    sell = json.load(urllib2.urlopen(SELL_URL))['total']['amount']
 
     now = int(time.time())        # Get current unix time
 
