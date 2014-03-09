@@ -127,9 +127,9 @@ class PricePlot(HasTraits):
 
         #Calculate the highest and lowest value of the graphs in the specified x-range.
         (y_min, y_max) = self._bounds(start, end)
+        delta = 0.1 * (y_max - y_min)       # We calculate margins on the bound using 10% of the data-spread
 
-        plot.range2d.y_range.low_setting = y_min * 0.9          # Specify 10% margins for the bounds
-        plot.range2d.y_range.high_setting = y_max * 1.1
+        plot.range2d.y_range.set_bounds(y_min - delta, y_max + delta)
 
         plot.request_redraw()
 
