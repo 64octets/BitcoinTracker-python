@@ -120,11 +120,8 @@ class PricePlot(HasTraits):
 
         plot.index_mapper.range.set_bounds(start, end)         # Set range of index (x values i.e. domain)
 
-        # Calculate the highest and lowest value of the graphs in the specified x-range.
-        (y_min, y_max) = self._y_bounds()
-        delta = 0.1 * (y_max - y_min)       # We calculate margins on the bound using 10% of the data-spread
-
-        plot.value_mapper.range.set_bounds(y_min - delta, y_max + delta)
+        plot.index_mapper.range.on_trait_change(self._xrange_changed, name='_low_value')        # We attach a listener on the range that is called when the _low_value attribute is changed
+        self._xrange_changed()      # We call this initially to fit the y-range initially
 
 
     def _y_bounds(self):
@@ -154,11 +151,21 @@ class PricePlot(HasTraits):
         return min, max
 
 
+    def _xrange_changed(self):
+        """
+        Method called when the xrange is changed so that the yrange can be changed to better fit the y-values
+        """
+        # Calculate the highest and lowest value of the graphs in the specified x-range.
+        (y_min, y_max) = self._y_bounds()
+        delta = 0.1 * (y_max - y_min)       # We calculate margins on the bound using 10% of the data-spread
+
+        self.plot.value_mapper.range.set_bounds(y_min - delta, y_max + delta)
+
+
     def _format_time(self, time):
         """
         Method for taking the Unix timestamp in the time-series domain and converting it in to a human-readable format
         """
-
         return datetime.datetime.fromtimestamp(time).strftime("%m-%d %H:%M")
 
 
