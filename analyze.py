@@ -111,7 +111,10 @@ class PricePlot(HasTraits):
 
         plot.x_grid.line_weight = 0         # Remove x Grid lines
 
-        plot.tools.append(PanTool(plot))        # Add Pan and Zoom abilities to the plot
+        pan = PanTool(component=plot)       # Set up PanTool so that it is constrained to move along the x-direction only
+        pan.constrain = True
+        pan.constrain_direction = 'x'
+        plot.tools.append(pan)        # Add Pan and Zoom abilities to the plot
 
         zoom = ZoomTool(component=plot, tool_mode="range", axis="index", always_on=False)       # We create the ZoomTool to zoom along the x-axis only
         plot.tools.append(zoom)
