@@ -65,6 +65,7 @@ class PricePlot(HasTraits):
         plot_data = ArrayPlotData(t=t, b=b, s=s, wb=wb, ws=ws)
 
         plot = Plot(plot_data)
+        self.plot = plot
 
         # Calculate range of plot so it shows latest 1 day of data
         end = t[-1]
@@ -92,8 +93,6 @@ class PricePlot(HasTraits):
 
         plot.title = "Current Price - Buy: ${} - Sell: ${}".format(buy[-1], sell[-1])       # Display current price in title
 
-        self.plot = plot
-
 
     def _configure_plot(self, plot, start, end):
         """
@@ -119,38 +118,26 @@ class PricePlot(HasTraits):
 
         plot.x_axis.tick_label_formatter = lambda tick: self._format_time(tick)      # Set formatter for time axis tick labels
 
-        r = plot.index_mapper.range         # Set range of index (x values i.e. domain)
-        r.low = start
-        r.high = end
+        plot.index_mapper.range.set_bounds(start, end)         # Set range of index (x values i.e. domain)
 
-        self.x_range = plot.range2d.x_range
-
-        #Calculate the highest and lowest value of the graphs in the specified x-range.
-        (y_min, y_max) = self._bounds(start, end)
+        # Calculate the highest and lowest value of the graphs in the specified x-range.
+        (y_min, y_max) = self._y_bounds()
         delta = 0.1 * (y_max - y_min)       # We calculate margins on the bound using 10% of the data-spread
 
-        plot.range2d.y_range.set_bounds(y_min - delta, y_max + delta)
-
-        plot.request_redraw()
+        plot.value_mapper.range.set_bounds(y_min - delta, y_max + delta)
 
 
-    def _bounds(self, start, end):
+    def _y_bounds(self):
         """
-        Calculates the min and max values of the arrays b and s in the x-range specified
+        Calculates the min and max values of the arrays b and s in the x-range currently chosen
         """
+
+        (a, b) = self.plot.index_mapper.range.bound_data(self.t)        # We find the indices that bound the data self.t in the currently chosen x_range
 
         min = 1e6       # Start with a maximum possible value from which to go down
         max = 0
 
-        for ii in range(len(self.t)):
-
-            if self.t[ii] >= start:
-                break
-
-        for jj in range(ii, len(self.t)):
-
-            if self.t[jj] > end:
-                break
+        for jj in range(a, b):      # We iterate over the indices of the bounds finding the min and max values of self.b and self.s in the range
 
             if self.b[jj] < min:
                 min = self.b[jj]
