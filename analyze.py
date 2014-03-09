@@ -58,6 +58,10 @@ class PricePlot(HasTraits):
         wb = numpy.array(weighted_buy)
         ws = numpy.array(weighted_sell)
 
+        self.t = t
+        self.b = b
+        self.s = s
+
         plot_data = ArrayPlotData(t=t, b=b, s=s, wb=wb, ws=ws)
 
         plot = Plot(plot_data)
@@ -109,7 +113,9 @@ class PricePlot(HasTraits):
         plot.x_grid.line_weight = 0         # Remove x Grid lines
 
         plot.tools.append(PanTool(plot))        # Add Pan and Zoom abilities to the plot
-        plot.tools.append(ZoomTool(plot))
+
+        zoom = ZoomTool(component=plot, tool_mode="range", axis="index", always_on=False)       # We create the ZoomTool to zoom along the x-axis only
+        plot.tools.append(zoom)
 
         plot.x_axis.tick_label_formatter = lambda tick: self._format_time(tick)      # Set formatter for time axis tick labels
 
@@ -117,7 +123,48 @@ class PricePlot(HasTraits):
         r.low = start
         r.high = end
 
+        self.x_range = plot.range2d.x_range
+
+        #Calculate the highest and lowest value of the graphs in the specified x-range.
+        (y_min, y_max) = self._bounds(start, end)
+
+        plot.range2d.y_range.low_setting = y_min * 0.9          # Specify 10% margins for the bounds
+        plot.range2d.y_range.high_setting = y_max * 1.1
+
         plot.request_redraw()
+
+
+    def _bounds(self, start, end):
+        """
+        Calculates the min and max values of the arrays b and s in the x-range specified
+        """
+
+        min = 1e6       # Start with a maximum possible value from which to go down
+        max = 0
+
+        for ii in range(len(self.t)):
+
+            if self.t[ii] >= start:
+                break
+
+        for jj in range(ii, len(self.t)):
+
+            if self.t[jj] > end:
+                break
+
+            if self.b[jj] < min:
+                min = self.b[jj]
+
+            if self.s[jj] < min:
+                min = self.s[jj]
+
+            if self.b[jj] > max:
+                max = self.b[jj]
+
+            if self.s[jj] > max:
+                max = self.b[jj]
+
+        return min, max
 
 
     def _format_time(self, time):
