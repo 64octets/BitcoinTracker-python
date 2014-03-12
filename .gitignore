@@ -1,7 +1,8 @@
 # Ignore Data files:
-
 *.txt
 
-# Ingore PyCharm files:
-
+# Ignore PyCharm files:
 .idea/
+
+# Ingore the SQLITE database:
+data.db
