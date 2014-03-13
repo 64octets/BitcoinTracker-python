@@ -29,7 +29,8 @@ from chaco.tools.api import PanTool, ZoomTool
 import datetime
 from enable.component_editor import ComponentEditor
 import numpy
-import re
+import sqlite3
+import time
 from traits.api import HasTraits, Instance
 from traitsui.api import Item, View
 
@@ -210,39 +211,33 @@ if __name__ == '__main__':
     N = 1 * 12
 
     # Exponential weighing factor:          (The larger the factor the more effect old values have on the average)
-    FACTOR = 1.0 / 1e3
+    # FACTOR = 1.0 / 1e3
 
     # Define the weighing function used to calculate the average
     weighing_function = lambda x: (N - x)           # We use a linear weighing function. x = 0 is the end-value
                                                     # and as x increases we are looking at successively older values
 
 
-    # Read data from file
-    fin = open("data.txt")
-
-    # Define regular expression to extract information
-    RegEx = re.compile("^(\d+) (\d+\.\d*) (\d+\.\d*)$")
-
-    time = []
+    times = []
     buy = []
     sell = []
 
-    for line in fin.readlines():
+    conn = sqlite3.connect('data.db')
+    cursor = conn.cursor()
 
-        m = RegEx.match(line.strip())
+    now = int(time.time())      # Current epoch time
+    threshold = now - (86400 * 2)       # Epoch time exactly two days ago.
 
-        if m:
+    for values in cursor.execute('''SELECT "time", "buy", "sell" FROM "prices" WHERE "time" > ?''', (threshold,)):
 
-            time.append(int(m.group(1)))
-            buy.append(float(m.group(2)))
-            sell.append(float(m.group(3)))
+        times.append(values[0])
+        buy.append(values[1])
+        sell.append(values[2])
 
-        else:
-
-            print("RegEx error parsing data: " + line)
+    conn.close()
 
     weighted_buy = weighted_running_average(buy, N, weighing_function)
     weighted_sell = weighted_running_average(sell, N, weighing_function)
 
 
-    PricePlot(time, buy, sell, weighted_buy, weighted_sell).configure_traits()
+    PricePlot(times, buy, sell, weighted_buy, weighted_sell).configure_traits()
