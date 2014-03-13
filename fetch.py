@@ -23,13 +23,15 @@
 
 import urllib2
 import json
+import sqlite3
+import sys
 import time
 
 
 TICKER_URL = "https://www.bitstamp.net/api/ticker/"
 
 
-def main():
+if __name__ == '__main__':
 
     data = json.load(urllib2.urlopen(TICKER_URL))
 
@@ -41,4 +43,12 @@ def main():
     print("{} {} {}".format(now, buy, sell))
 
 
-main()
+    if len(sys.argv) > 1 and sys.argv[1] == '--insert':         # The --insert switch has been passed so we insert the data in to the sqlite3 database
+
+        conn = sqlite3.connect('/home/abid/scripts/python/bitcoin/data.db')
+        cursor = conn.cursor()
+
+        cursor.execute('''INSERT INTO "prices" ("time", "buy", "sell") VALUES (?, ?, ?)''', (now, buy, sell))
+
+        conn.commit()
+        conn.close()
