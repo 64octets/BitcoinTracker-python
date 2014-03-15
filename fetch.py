@@ -21,11 +21,12 @@
 #
 # This script fetches data from the BitStamp backedn API and prints it to stdout
 
-import urllib2
+from datetime import datetime
 import json
 import sqlite3
 import sys
 import time
+import urllib2
 
 
 TICKER_URL = "https://www.bitstamp.net/api/ticker/"
@@ -40,8 +41,6 @@ if __name__ == '__main__':
 
     now = int(time.time())        # Get current unix time
 
-    print("{} {} {}".format(now, buy, sell))
-
 
     if len(sys.argv) > 1 and sys.argv[1] == '--insert':         # The --insert switch has been passed so we insert the data in to the sqlite3 database
 
@@ -52,3 +51,9 @@ if __name__ == '__main__':
 
         conn.commit()
         conn.close()
+
+    else:           # The --insert switch has NOT been passed so we print the fetched data to stdout
+
+        timestring = datetime.fromtimestamp(now).strftime("%H:%M:%S")
+
+        print("{} : {} - {}".format(timestring, buy, sell))
