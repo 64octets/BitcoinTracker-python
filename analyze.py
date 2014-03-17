@@ -29,6 +29,7 @@ from chaco.tools.api import PanTool, ZoomTool
 import datetime
 from enable.component_editor import ComponentEditor
 import numpy
+import os
 import sqlite3
 import time
 from traits.api import HasTraits, Instance
@@ -222,7 +223,9 @@ if __name__ == '__main__':
     buy = []
     sell = []
 
-    conn = sqlite3.connect('data.db')
+    filepath = os.path.join(os.path.dirname(__file__), 'data.db')       # Get absolute path to the database by using the fact that it is in the same folder as this script
+
+    conn = sqlite3.connect(filepath)
     cursor = conn.cursor()
 
     now = int(time.time())      # Current epoch time
