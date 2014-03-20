@@ -28,6 +28,8 @@ import sys
 import time
 import urllib2
 
+from utilities.weighted_average import single_weighted_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
+
 
 TICKER_URL = "https://www.bitstamp.net/api/ticker/"
 
@@ -47,7 +49,25 @@ if __name__ == '__main__':
         conn = sqlite3.connect('/home/abid/scripts/python/bitcoin/data.db')
         cursor = conn.cursor()
 
-        cursor.execute('''INSERT INTO "prices" ("time", "buy", "sell") VALUES (?, ?, ?)''', (now, buy, sell))
+        # We pull previous (NUM_WEIGHING_SAMPLES - 1) prices to calculate the current weighted_average of the prices:
+        
+        s_buy = []
+        s_sell = []
+
+        for values in cursor.execute('''SELECT "buy", "sell" FROM "prices" ORDER BY "time" DESC LIMIT ?''', (NUM_WEIGHING_SAMPLES - 1,)):
+
+            s_buy.append( values[0] )
+            s_sell.append( values[1] )
+
+        # Append the current values
+        s_buy.append( float(buy) )
+        s_sell.append( float(sell) )
+
+        wbuy = single_weighted_average(s_buy, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION)
+        wsell = single_weighted_average(s_sell, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION)
+
+
+        cursor.execute('''INSERT INTO "prices" ("time", "buy", "sell", "wa_buy", "wa_sell") VALUES (?, ?, ?, ?, ?)''', (now, buy, sell, wbuy, wsell))
 
         conn.commit()
         conn.close()

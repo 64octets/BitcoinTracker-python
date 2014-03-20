@@ -56,3 +56,28 @@ def weighted_running_average(series, N, weighing_function = None):
         weighted_series.append( round( sum / float(denom), 2) )     # Append the calculated weighted sum (rounded to 2 decimal places) to the output series
 
     return weighted_series
+
+
+
+def single_weighted_average(series, N, weighing_function = None):
+    """
+    Calculates the weighted running average of the last sample in the series using the previous samples.
+    """
+
+    if len(series) != N:        # The expectation is that the series contains N samples
+
+        raise RuntimeException
+
+    if not weighing_function:           # No weighing function provided so we specify the default one
+
+        weighing_function = lambda x: 1     # Standard mean over N values. NOTE: If you set N = 1 you get the exact value back
+
+    sum = 0
+    denom = 0
+
+    for ii in range(N):
+
+        sum += series[ii] * weighing_function(ii)
+        denom += weighing_function(ii)
+
+    return round( sum / float(denom), 2 )
