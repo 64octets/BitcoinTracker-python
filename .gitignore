@@ -9,3 +9,6 @@ data.db
 
 # Ignore compiled python code:
 *.pyc
+
+# Do NOT store password file in repo:
+secrets.py

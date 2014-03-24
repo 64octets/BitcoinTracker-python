@@ -22,7 +22,7 @@
 # This module implements utilities for calculating the weighted average of a data series.
 
 
-NUM_WEIGHING_SAMPLES = 1 * 12      # Define the weighted sum sampling window to be 1 hour: i.e. the number of 5 min intervals in 1 hour
+NUM_WEIGHING_SAMPLES = 15      # Define the weighted sum sampling window to be 15 min
 
 WEIGHING_FUNCTION = lambda x: (NUM_WEIGHING_SAMPLES - x)           # We use a linear weighing function. x = 0 is the end-value
                                                                    # and as x increases we are looking at successively older values
