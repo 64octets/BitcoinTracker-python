@@ -4,8 +4,9 @@
 # Ignore PyCharm files:
 .idea/
 
-# Ignore the SQLITE database:
+# Ignore the SQLITE databases:
 data.db
+*.db*
 
 # Ignore compiled python code:
 *.pyc
