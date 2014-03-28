@@ -20,7 +20,7 @@ def credentials():
 
     creds = {}
 
-    nonce = str(int(time.time()))       # We use the Unix timestamp in seconds converted to a string as the nonce.
+    nonce = str(int(time.time() * 1e6))       # We use the Unix timestamp in microseconds converted to a string as the nonce.
     key = api['key']
     message = nonce + api['client_id'] + key
 
