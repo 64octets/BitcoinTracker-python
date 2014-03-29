@@ -13,6 +13,7 @@ import urllib2
 from secrets import api
 
 
+
 def credentials():
     """
     This method returns all of the credentials that must be send in the POST body of API requests to Bitstamp for authentication.
@@ -43,6 +44,16 @@ def balance():
     return request(url)
 
 
+def transactions():
+    """
+    Fetch the User Transaction history.
+    """
+
+    url = "https://www.bitstamp.net/api/user_transactions/"
+
+    return request(url)
+
+
 def request(url):
     """
     Uses the BitStamp REST API to POST a request and get the response back as a Python Dictionary
@@ -51,16 +62,23 @@ def request(url):
     data = urllib.urlencode( credentials() )
 
     fin = urllib2.urlopen(url, data)
-    response = fin.readlines()
+    jResponse = fin.readlines()
 
-    return json.loads( response[0] )
+    response = json.loads( jResponse[0] )
+
+    if type(response) == dict and 'error' in response.keys():
+
+        raise ClientException("API Error: " + response['error'])
+
+    return response
 
 
-def balance_usd():
 
-    return float( balance()['usd_available'] )
+class ClientException(Exception):
+    """
+    Custom exception raised when an error occurs during the client's operation.
+    """
 
+    def __init__(self, message):
 
-def balance_btc():
-
-    return float( balance()['btc_available'] )
+        super(ClientException, self).__init__(message)

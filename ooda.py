@@ -26,7 +26,7 @@ import datetime
 import os
 import sqlite3
 
-from client import balance
+import client
 
 
 class Data:
@@ -54,10 +54,13 @@ class Data:
         cursor.close()
 
         # Use BitStamp API client to fetch the USD and BTC balance
-        bal = balance()
+        bal = client.balance()
 
         self.usd_balance = bal['usd_available']
         self.btc_balance = bal['btc_available']
+
+        # Query "transactions" table to database to get the latest buy and sell prices (needed for orienting/analysis)
+
 
         # Carry out Debug tasks to change Date object for debugging:
         self.original_buy = 510
@@ -99,6 +102,7 @@ class Decision:
         """
 
         return self._condition and self._final
+
 
 
 def initiate_decisions():
