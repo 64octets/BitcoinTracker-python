@@ -1,3 +1,6 @@
 # Ignore files pulled in via symbolic links
 client.py
 secrets.py
+
+# Ignore CSV files
+*.csv
