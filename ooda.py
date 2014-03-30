@@ -29,6 +29,14 @@ import sqlite3
 import client
 
 
+def format_time(t):
+    """
+    Method for converting a unix epoch timestamp to human-readable format.
+    """
+
+    return datetime.datetime.fromtimestamp(t).strftime("%m-%d %H:%M")
+
+
 class Data:
     """
     This class encapsulates the data collected and as such is representative of the current STATE of bitcoin prices, including history.
@@ -51,19 +59,46 @@ class Data:
         self.buy = values[1]
         self.sell = values[2]
 
-        cursor.close()
-
         # Use BitStamp API client to fetch the USD and BTC balance
         bal = client.balance()
 
-        self.usd_balance = bal['usd_available']
-        self.btc_balance = bal['btc_available']
+        self.usd_balance = bal['usd_balance']
+        self.btc_balance = bal['btc_balance']
 
-        # Query "transactions" table to database to get the latest buy and sell prices (needed for orienting/analysis)
+        # Query "transactions" table to database to get the latest buy and sell prices and the times they occurred (needed for orienting/analysis)
+        values = cursor.execute('''SELECT "time", "rate" FROM "transactions" WHERE "usd" > 0 ORDER BY "time" DESC LIMIT 1''').fetchone()
+        self.last_sell_time = values[0]
+        self.last_sell_price = values[1]
 
+        values = cursor.execute('''SELECT "time", "rate" FROM "transactions" WHERE "usd" < 0 ORDER BY "time" DESC LIMIT 1''').fetchone()
+        self.last_buy_time = values[0]
+        self.last_buy_price = values[1]
+
+        # Fetch all buy prices since the last time BTC was sold
+        self.buy_prices = []
+        for values in cursor.execute('''SELECT "sell" FROM "prices" WHERE "time" > ?''', (self.last_sell_time,)):
+
+            self.buy_prices.append(values[0])
+
+        # Fetch all sell prices since the last time BTC was bought
+        self.sell_prices = []
+        for values in cursor.execute('''SELECT "buy" FROM "prices" WHERE "time" > ?''', (self.last_buy_time, )):
+
+            self.sell_prices.append(values[0])
+
+        cursor.close()
 
         # Carry out Debug tasks to change Date object for debugging:
-        self.original_buy = 510
+
+
+    def __str__(self):
+        """
+        String representation of the object.
+        """
+        #formatted_time = datetime.datetime.fromtimestamp(d.time).strftime("%m-%d %H:%M")        # Format the timestamp for humans
+
+
+        return "Timestamp: {ts}\n\nBuy: {buy}\nSell: {sell}\n\nUSD Balance: {usd}\nBTC Balance: {btc}\n\nLast Buy Price: {obuy}  {obtime}\nLast Sell Price: {osell}  {ostime}\n\nBuy Prices: {bprices}\nSell Prices: {sprices}".format(ts=format_time(d.time), buy=self.buy, sell=self.sell, usd=self.usd_balance, btc=self.btc_balance, obuy=self.last_buy_price, osell=self.last_sell_price, bprices=self.buy_prices, sprices=self.sell_prices, obtime=format_time(self.last_buy_time), ostime=format_time(self.last_sell_time))
 
 
 
@@ -112,14 +147,14 @@ def initiate_decisions():
 
     decisions = []
 
-    # If we have BTC and the sell price falls 0.5% of the original buy price the BTC must be sold immediately in anticipation of an upcoming slump.
+    # If we have BTC and the sell price falls below 1% of the original (last) buy price the BTC must be sold immediately in anticipation of an upcoming slump.
     def condition(data):
 
         if data.btc_balance > 0:
 
-            if data.sell < 0.995 * data.original_buy:
+            if data.sell < 0.99 * data.last_buy_price:
 
-                print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.original_buy, sell=data.sell, delta=data.sell - data.original_buy, pct=(data.sell - data.original_buy)/data.original_buy*100))
+                print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price)/data.last_buy_price * 100))
 
                 return True
 
@@ -127,9 +162,28 @@ def initiate_decisions():
 
     def action():
 
-        print("BTC sell price has fallen below 99.5% of original buy price.")
+        print("BTC sell price has fallen below 99% of original buy price.")
 
-    
+    decisions.append( Decision(condition, action, True) )
+
+
+    # If we have BTC and the sell price is between 100% and 101% of the original (last) buy price the BTC should be sold if the price has fallen from above 101% ensuring that a minimum profit will be earned.
+    def condition(data):
+
+        if data.btc_balance > 0:
+
+            if data.last_buy_price < data.sell < 1.01 * data.last_buy_price:
+
+                print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price) / data.last_buy_price * 100))
+
+                return True
+
+        return False
+
+    def action():
+
+        print("BTC sell price is between 100% and 101% of original buy price.")
+
     decisions.append( Decision(condition, action, True) )
 
 
@@ -141,13 +195,10 @@ def initiate_decisions():
 if __name__ == '__main__':
 
     d = Data()
+    print(d)
 
     # Create the list of decisions to be carried out (this includes the Orient, Decide and Act phases of OODA)
     decisions = initiate_decisions()
-
-    formatted_time = datetime.datetime.fromtimestamp(d.time).strftime("%m-%d %H:%M")
-
-    print "Timestamp: {ts}\n\nBuy: {buy}\nSell: {sell}\n\nUSD Balance: {usd}\nBTC Balance: {btc}\n\nOriginal Buy Price: {obuy}\n".format(ts=formatted_time, buy=d.buy, sell=d.sell, usd=d.usd_balance, btc=d.btc_balance, obuy=d.original_buy)
 
 
     for decision in decisions:
