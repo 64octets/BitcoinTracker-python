@@ -34,6 +34,20 @@ def credentials():
     return creds
 
 
+def current_price():
+    """
+    Fetch the current buy and sell prices.
+    """
+
+    url = "https://www.bitstamp.net/api/ticker/"
+
+    response = json.load(urllib2.urlopen(url))
+
+    data = {'buy': response["ask"], 'sell': response["bid"]}
+
+    return data
+
+
 def balance():
     """
     Fetch the BTC and USD balance in the account.
@@ -104,6 +118,36 @@ def sell_order(amount, price):
     url = "https://www.bitstamp.net/api/sell/"
 
     return request(url, {'amount': amount, 'price': price})
+
+
+def purge():
+    """
+    Method for selling all BTC as quickly as possible.
+    """
+
+    print("Beginning purge")
+
+    flag = True
+
+    while flag:
+
+        btc = balance()['btc_balance']      # No. of BTC still in account
+
+        if btc > 0:
+
+            print("Remaining BTC: {}", btc)
+            cancel_all_orders()
+
+            sell_price = current_price()['sell']
+            sell_order(btc, sell_price)
+
+            time.sleep(5)           # Wait for 5 seconds before continuing
+
+        else:
+
+            flag = False        # Break while loop
+            print("Purge ends.\n")
+
 
 
 def request(url, payload={}):

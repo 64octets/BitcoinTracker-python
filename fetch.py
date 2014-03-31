@@ -28,18 +28,16 @@ import sys
 import time
 import urllib2
 
+import client
 from utilities.weighted_average import single_weighted_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
-
-
-TICKER_URL = "https://www.bitstamp.net/api/ticker/"
 
 
 if __name__ == '__main__':
 
-    data = json.load(urllib2.urlopen(TICKER_URL))
+    data = client.current_price()
 
-    buy = data["ask"]
-    sell = data["bid"]
+    buy = data["buy"]
+    sell = data["sell"]
 
     now = int(time.time())        # Get current unix time
 

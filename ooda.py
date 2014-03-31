@@ -23,7 +23,6 @@
 
 
 import datetime
-import os
 import rpy2.robjects as robjects
 import sqlite3
 import time
@@ -76,6 +75,8 @@ class Data:
         # Use BitStamp API client to fetch the USD and BTC balance
         bal = client.balance()
 
+        print(bal)
+
         self.usd_balance = bal['usd_balance']
         self.btc_balance = bal['btc_balance']
 
@@ -116,7 +117,7 @@ class Data:
         #formatted_time = datetime.datetime.fromtimestamp(d.time).strftime("%m-%d %H:%M")        # Format the timestamp for humans
 
 
-        return "Timestamp: {ts}\n\nBuy: {buy}\nSell: {sell}\n\nUSD Balance: {usd}\nBTC Balance: {btc}\n\nLast Buy Price: {obuy}  {obtime}\nLast Sell Price: {osell}  {ostime}\n\nBuy Prices: {bprices}\nSell Prices: {sprices}".format(ts=format_time(d.time), buy=self.buy, sell=self.sell, usd=self.usd_balance, btc=self.btc_balance, obuy=self.last_buy_price, osell=self.last_sell_price, bprices=self.buy_prices, sprices=self.sell_prices, obtime=format_time(self.last_buy_time), ostime=format_time(self.last_sell_time))
+        return "Timestamp: {ts}\n\nBuy: {buy}\nSell: {sell}\n\nUSD Balance: {usd}\nBTC Balance: {btc}\n\nLast Buy Price: {obuy}  {obtime}\nLast Sell Price: {osell}  {ostime}\n\nBuy Prices: {bprices}\nSell Prices: {sprices}".format(ts=format_time(self.time), buy=self.buy, sell=self.sell, usd=self.usd_balance, btc=self.btc_balance, obuy=self.last_buy_price, osell=self.last_sell_price, bprices=self.buy_prices, sprices=self.sell_prices, obtime=format_time(self.last_buy_time), ostime=format_time(self.last_sell_time))
 
 
 
@@ -183,11 +184,14 @@ def initiate_decisions():
 
         print("BTC sell price has fallen below 97.5% of original buy price. Selling.\n")
 
-        # The first step is to cancel all open orders:
-        client.cancel_all_orders()
+        ## The first step is to cancel all open orders:
+        #client.cancel_all_orders()
+        #
+        ## Next we create a sell order for all the BTC:
+        #client.sell_order(data.btc_balance, 0.975 * data.last_buy_price)
 
-        # Next we create a sell order for all the BTC:
-        client.sell_order(data.btc_balance, 0.975 * data.last_buy_price)
+        # We are in a rush to off-load so we purge all BTC
+        client.purge()
 
         # Push transactions in to database to update it
         utilities.push_transactions.push()
