@@ -54,12 +54,57 @@ def transactions():
     return request(url)
 
 
-def request(url):
+def open_orders():
     """
-    Uses the BitStamp REST API to POST a request and get the response back as a Python Dictionary
+    Fetch all currently open orders.
     """
 
-    data = urllib.urlencode( credentials() )
+    url = "https://www.bitstamp.net/api/open_orders/"
+
+    return request(url)
+
+
+def cancel_order(id):
+    """
+    Cancel the order with the specified id.
+    """
+
+    url = "https://www.bitstamp.net/api/cancel_order/"
+
+    return request(url, {'id': id})
+
+
+def buy_order(amount, price):
+    """
+    Create a Buy Limit order.
+    """
+
+    url = "https://www.bitstamp.net/api/buy/"
+
+    return request(url, {'amount': amount, 'price': price})
+
+
+def sell_order(amount, price):
+    """
+    Create a Sell Limit order.
+    """
+
+    url = "https://www.bitstamp.net/api/sell/"
+
+    return request(url, {'amount': amount, 'price': price})
+
+
+def request(url, payload={}):
+    """
+    Uses the BitStamp REST API to POST a request and get the response back as a Python Dictionary.
+
+    We pass in a dictionary payload containing data above and beyond the credentials.
+    """
+
+    pd = credentials()      # Initial payload is the credentials dictionary
+    pd.update(payload)      # We add the passed in dictionary to the data object we send in the request.
+
+    data = urllib.urlencode( pd )
 
     fin = urllib2.urlopen(url, data)
     jResponse = fin.readlines()
@@ -68,7 +113,7 @@ def request(url):
 
     if type(response) == dict and 'error' in response.keys():
 
-        raise ClientException("API Error: " + response['error'])
+        raise ClientException("API Error: " + str(response['error']))
 
     return response
 
