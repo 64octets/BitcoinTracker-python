@@ -74,6 +74,18 @@ def cancel_order(id):
     return request(url, {'id': id})
 
 
+def cancel_all_orders():
+    """
+    Cancels ALL open orders.
+    """
+
+    data = open_orders()
+
+    for datum in data:
+
+        cancel_order(datum['id'])
+
+
 def buy_order(amount, price):
     """
     Create a Buy Limit order.

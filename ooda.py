@@ -25,6 +25,7 @@
 import datetime
 import os
 import sqlite3
+import time
 
 import client
 
@@ -35,6 +36,14 @@ def format_time(t):
     """
 
     return datetime.datetime.fromtimestamp(t).strftime("%m-%d %H:%M")
+
+
+def current_time():
+    """
+    Method for getting the current time in a human-readable format.
+    """
+
+    return datetime.datetime.fromtimestamp(time.time()).strftime("%m-%d %H:%M")
 
 
 class Data:
@@ -48,9 +57,9 @@ class Data:
         """
         # The first step is to fetch current price data from the sqlite3 database
 
-        filepath = os.path.join(os.path.dirname(__file__), 'data.db')
+        #filepath = os.path.join(os.path.dirname(__file__), 'data.db')
 
-        conn = sqlite3.connect(filepath)
+        conn = sqlite3.connect('/home/abid/scripts/python/bitcoin/data.db')
         cursor = conn.cursor()
 
         values = cursor.execute('''SELECT "time", "buy", "sell" FROM "prices" ORDER BY "time" DESC LIMIT 1''').fetchone()
@@ -128,7 +137,7 @@ class Decision:
 
         if (self._condition):
 
-            self.action()
+            self.action(data)
 
 
     def final(self):
@@ -147,22 +156,30 @@ def initiate_decisions():
 
     decisions = []
 
-    # If we have BTC and the sell price falls below 1% of the original (last) buy price the BTC must be sold immediately in anticipation of an upcoming slump.
+    # If we have BTC and the sell price falls below 2.5% of the original (last) buy price the BTC must be sold immediately in anticipation of an upcoming slump.
     def condition(data):
 
         if data.btc_balance > 0:
 
-            if data.sell < 0.99 * data.last_buy_price:
+            if data.sell < 0.975 * data.last_buy_price:
 
+                print(current_time())
                 print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price)/data.last_buy_price * 100))
 
                 return True
 
         return False
 
-    def action():
+    def action(data):
 
-        print("BTC sell price has fallen below 99% of original buy price.")
+        print("BTC sell price has fallen below 97.5% of original buy price. Selling.\n")
+
+        # The first step is to cancel all open orders:
+        client.cancel_all_orders()
+
+        # Next we create a sell order for all the BTC:
+        client.sell_order(data.btc_balance, 0.975 * data.last_buy_price)
+
 
     decisions.append( Decision(condition, action, True) )
 
@@ -180,9 +197,9 @@ def initiate_decisions():
 
         return False
 
-    def action():
+    def action(data):
 
-        print("BTC sell price is between 100% and 101% of original buy price.")
+        print("BTC sell price is between 100% and 101% of original buy price.\n")
 
     decisions.append( Decision(condition, action, True) )
 
@@ -195,7 +212,6 @@ def initiate_decisions():
 if __name__ == '__main__':
 
     d = Data()
-    print(d)
 
     # Create the list of decisions to be carried out (this includes the Orient, Decide and Act phases of OODA)
     decisions = initiate_decisions()
@@ -207,5 +223,4 @@ if __name__ == '__main__':
         
         if decision.final():
 
-            print("Final Decision")
             break
