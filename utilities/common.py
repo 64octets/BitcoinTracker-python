@@ -24,6 +24,7 @@
 
 from datetime import datetime
 from dateutil.parser import parse
+import os
 import pytz
 
 
@@ -38,3 +39,13 @@ def unix_timestamp(timestring):
     delta = dt - epoch          # Calculate time difference between beginning of epoch and timestamp
 
     return int(delta.total_seconds())           # Converts delta to seconds which is the definition of the unix timestamp (seconds since epoch)
+
+
+def add_parent_to_path():
+    """
+    Method for adding the grand-parent folder to the PYTHON PATH which allows us to import from the package defined by the parent folder.
+    """
+
+    parentdir = os.path.dirname( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
+
+    os.sys.path.insert(0, parentdir)

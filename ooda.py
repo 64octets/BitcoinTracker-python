@@ -23,11 +23,13 @@
 
 
 import datetime
+import os
 import rpy2.robjects as robjects
 import sqlite3
 import time
 
 import client
+import common
 import utilities.push_transactions
 
 
@@ -68,7 +70,7 @@ class Data:
 
         #filepath = os.path.join(os.path.dirname(__file__), 'data.db')
 
-        conn = sqlite3.connect('/home/abid/scripts/python/bitcoin/data.db')
+        conn = sqlite3.connect( common.get_db() )
         cursor = conn.cursor()
 
         values = cursor.execute('''SELECT "time", "buy", "sell" FROM "prices" ORDER BY "time" DESC LIMIT 1''').fetchone()

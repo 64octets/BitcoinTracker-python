@@ -27,7 +27,10 @@ from dateutil.parser import parse
 import pytz
 import sys
 
-import client
+import common
+common.add_parent_to_path()
+
+import bitcoin.client
 
 
 if __name__ == '__main__':
@@ -37,7 +40,7 @@ if __name__ == '__main__':
 
 
     print("Fetching transactions from BitStamp server ...")
-    data = client.transactions()
+    data = bitcoin.client.transactions()
 
     fout = open("transactions.csv", 'w')
     sold = []       # List of "sell" transactions
