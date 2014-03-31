@@ -31,7 +31,12 @@ import client
 import utilities.push_transactions
 
 
-rmax = robjects.r['max']        # Get access to the max function from R
+def max_price(prices):
+    """
+    Function that uses R to find the maximum price from a list of float prices.
+    """
+
+    return robjects.r['max'](prices)[0]        # We use the R object to access the 'max' function, pass in the list of prices and then get the 1st element to get the result
 
 
 def format_time(t):
@@ -75,8 +80,6 @@ class Data:
         # Use BitStamp API client to fetch the USD and BTC balance
         bal = client.balance()
 
-        print(bal)
-
         self.usd_balance = bal['usd_balance']
         self.btc_balance = bal['btc_balance']
 
@@ -91,13 +94,13 @@ class Data:
 
         # Fetch all buy prices since the last time BTC was sold
         self.buy_prices = []
-        for values in cursor.execute('''SELECT "sell" FROM "prices" WHERE "time" > ?''', (self.last_sell_time,)):
+        for values in cursor.execute('''SELECT "buy" FROM "prices" WHERE "time" > ?''', (self.last_sell_time,)):
 
             self.buy_prices.append(values[0])
 
         # Fetch all sell prices since the last time BTC was bought
         self.sell_prices = []
-        for values in cursor.execute('''SELECT "buy" FROM "prices" WHERE "time" > ?''', (self.last_buy_time, )):
+        for values in cursor.execute('''SELECT "sell" FROM "prices" WHERE "time" > ?''', (self.last_buy_time, )):
 
             self.sell_prices.append(values[0])
 
@@ -114,9 +117,6 @@ class Data:
         """
         String representation of the object.
         """
-        #formatted_time = datetime.datetime.fromtimestamp(d.time).strftime("%m-%d %H:%M")        # Format the timestamp for humans
-
-
         return "Timestamp: {ts}\n\nBuy: {buy}\nSell: {sell}\n\nUSD Balance: {usd}\nBTC Balance: {btc}\n\nLast Buy Price: {obuy}  {obtime}\nLast Sell Price: {osell}  {ostime}\n\nBuy Prices: {bprices}\nSell Prices: {sprices}".format(ts=format_time(self.time), buy=self.buy, sell=self.sell, usd=self.usd_balance, btc=self.btc_balance, obuy=self.last_buy_price, osell=self.last_sell_price, bprices=self.buy_prices, sprices=self.sell_prices, obtime=format_time(self.last_buy_time), ostime=format_time(self.last_sell_time))
 
 
@@ -191,32 +191,26 @@ def initiate_decisions():
         #client.sell_order(data.btc_balance, 0.975 * data.last_buy_price)
 
         # We are in a rush to off-load so we purge all BTC
-        client.purge()
+        #client.purge()
 
         # Push transactions in to database to update it
-        utilities.push_transactions.push()
+        #utilities.push_transactions.push()
 
 
     decisions.append( Decision(condition, action, True) )
 
 
-    # If we have BTC and the sell price is between 100% and 101% of the original (last) buy price the BTC should be sold if the price has fallen from above 101% ensuring that a minimum profit will be earned.
+    # If we have BTC and the sell price is between 100% and 102% of the original (last) buy price the BTC should be sold if the price has fallen from above 101% ensuring that a minimum profit will be earned.
     def condition(data):
 
         if data.btc_balance > 0:
 
             if data.last_buy_price < data.sell < 1.02 * data.last_buy_price:
 
-                if rmax(data.sell_prices) > 1.02 * data.last_buy_price:     # The sell prices exceeded the upper threshold before dropping thereby meeting the condition
+                if max_price(data.sell_prices) > 1.02 * data.last_buy_price:     # The sell prices exceeded the upper threshold before dropping thereby meeting the condition
 
                     print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price) / data.last_buy_price * 100))
-                    print("Max Sell price: {}", rmax(data.sell_prices))
-
-                    client.cancel_all_orders()
-                    client.sell_order(data.btc_balance, data.sell)
-
-                    # Push transactions in to database to update it
-                    utilities.push_transactions.push()
+                    print("Max Sell price: {}".format(max_price(data.sell_prices)))
 
                     return True
 
@@ -224,10 +218,18 @@ def initiate_decisions():
 
     def action(data):
 
-        print("BTC sell price is between 100% and 101% of original buy price.\n")
+        print("BTC sell price is between 100% and 102% of original buy price.\n")
+
+        #purge()
+
+        #client.cancel_all_orders()
+        #client.sell_order(data.btc_balance, data.sell)
+
+        ## Push transactions in to database to update it
+        #utilities.push_transactions.push()
+
 
     decisions.append( Decision(condition, action, True) )
-
 
     return decisions
 

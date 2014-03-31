@@ -31,7 +31,7 @@ from common import unix_timestamp
 
 def push():
 
-    conn = sqlite3.connect('../data.db')
+    conn = sqlite3.connect('/home/abid/scripts/python/bitcoin/data.db')
     cursor = conn.cursor()
 
     print("Fetching transactions from BitStamp server ...")
