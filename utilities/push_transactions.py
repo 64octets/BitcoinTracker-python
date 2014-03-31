@@ -29,8 +29,7 @@ import client
 from common import unix_timestamp
 
 
-
-if __name__ == '__main__':
+def push():
 
     conn = sqlite3.connect('../data.db')
     cursor = conn.cursor()
@@ -50,3 +49,8 @@ if __name__ == '__main__':
     conn.close()
 
     print("Done")
+
+
+if __name__ == '__main__':
+
+    push()

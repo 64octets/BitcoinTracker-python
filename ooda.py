@@ -24,10 +24,15 @@
 
 import datetime
 import os
+import rpy2.robjects as robjects
 import sqlite3
 import time
 
 import client
+import utilities.push_transactions
+
+
+rmax = robjects.r['max']        # Get access to the max function from R
 
 
 def format_time(t):
@@ -94,6 +99,10 @@ class Data:
         for values in cursor.execute('''SELECT "buy" FROM "prices" WHERE "time" > ?''', (self.last_buy_time, )):
 
             self.sell_prices.append(values[0])
+
+        # Convert array of prices in to R vectors
+        self.buy_prices = robjects.FloatVector(self.buy_prices)
+        self.sell_prices = robjects.FloatVector(self.sell_prices)
 
         cursor.close()
 
@@ -180,6 +189,9 @@ def initiate_decisions():
         # Next we create a sell order for all the BTC:
         client.sell_order(data.btc_balance, 0.975 * data.last_buy_price)
 
+        # Push transactions in to database to update it
+        utilities.push_transactions.push()
+
 
     decisions.append( Decision(condition, action, True) )
 
@@ -189,11 +201,20 @@ def initiate_decisions():
 
         if data.btc_balance > 0:
 
-            if data.last_buy_price < data.sell < 1.01 * data.last_buy_price:
+            if data.last_buy_price < data.sell < 1.02 * data.last_buy_price:
 
-                print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price) / data.last_buy_price * 100))
+                if rmax(data.sell_prices) > 1.02 * data.last_buy_price:     # The sell prices exceeded the upper threshold before dropping thereby meeting the condition
 
-                return True
+                    print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price) / data.last_buy_price * 100))
+                    print("Max Sell price: {}", rmax(data.sell_prices))
+
+                    client.cancel_all_orders()
+                    client.sell_order(data.btc_balance, data.sell)
+
+                    # Push transactions in to database to update it
+                    utilities.push_transactions.push()
+
+                    return True
 
         return False
 
