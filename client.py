@@ -129,6 +129,7 @@ def purge():
     print("Beginning purge")
 
     flag = True
+    prev_sell_price = 1e6           # A very large number so that the condition is triggered the first time.
 
     while flag:
 
@@ -137,17 +138,30 @@ def purge():
         if btc > 0:
 
             print("Remaining BTC: {}".format(btc))
-            cancel_all_orders()
 
             sell_price = current_price()['sell']
-            sell_order(btc, sell_price)
 
-            time.sleep(5)           # Wait for 5 seconds before continuing
+            if sell_price < 0.9975 * prev_sell_price:            # The sell price has fallen and so the previous sell price will NOT trigger an actual sale (because of the way limit orders work) so we create a new order
+
+                cancel_all_orders()
+
+                sell_order(btc, sell_price)
+                prev_sell_price = sell_price        # Update prev_sell_price for later comparison
+
+            elif sell_price > 1.005 * prev_sell_price:
+
+                print("Sell price has increased by more than 0.5%. Cancelling purge")
+                cancel_all_orders()
+                return
+
+            # NOTE: If the sell_price doesn't fall by more than 0.25% or rise by more than 0.5% we keep the same sell order active.
+
+            time.sleep(10)           # Wait for specified interval to allow sale to occur before continuing
 
         else:
 
             flag = False        # Break while loop
-            print("Purge ends.\n")
+            print("All BTC sold. Purge ends.\n")
 
 
 def acquire():
