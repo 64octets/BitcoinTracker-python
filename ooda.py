@@ -82,8 +82,8 @@ class Data:
         # Use BitStamp API client to fetch the USD and BTC balance
         bal = client.balance()
 
-        self.usd_balance = bal['usd_balance']
-        self.btc_balance = bal['btc_balance']
+        self.usd_balance = float(bal['usd_balance'])
+        self.btc_balance = float(bal['btc_balance'])
 
         # Query "transactions" table to database to get the latest buy and sell prices and the times they occurred (needed for orienting/analysis)
         values = cursor.execute('''SELECT "time", "rate" FROM "transactions" WHERE "usd" > 0 ORDER BY "time" DESC LIMIT 1''').fetchone()
@@ -173,9 +173,8 @@ def initiate_decisions():
 
         if data.btc_balance > 0:
 
-            if data.sell < 0.975 * data.last_buy_price:
+            if data.sell < 0.95 * data.last_buy_price:
 
-                print(current_time())
                 print("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price)/data.last_buy_price * 100))
 
                 return True
@@ -184,7 +183,7 @@ def initiate_decisions():
 
     def action(data):
 
-        print("BTC sell price has fallen below 97.5% of original buy price. Selling.\n")
+        print("{}\nBTC sell price has fallen below 95% of original buy price. Selling.\n".format(current_time()))
 
         ## The first step is to cancel all open orders:
         #client.cancel_all_orders()
@@ -193,21 +192,22 @@ def initiate_decisions():
         #client.sell_order(data.btc_balance, 0.975 * data.last_buy_price)
 
         # We are in a rush to off-load so we purge all BTC
-        #client.purge()
+        client.purge()
 
         # Push transactions in to database to update it
-        #utilities.push_transactions.push()
+        utilities.push_transactions.push()
 
 
     decisions.append( Decision(condition, action, True) )
 
 
-    # If we have BTC and the sell price is between 100% and 102% of the original (last) buy price the BTC should be sold if the price has fallen from above 101% ensuring that a minimum profit will be earned.
+    # If we have BTC and the sell price is between 100.8% and 102% of the original (last) buy price the BTC should be sold if the price has fallen from above 102% ensuring that a minimum profit will be earned.
+    # The 100.8% comes from the fact that the fees per transaction are approximately below 0.4%. Selling below this level will cause a loss to occur.
     def condition(data):
 
         if data.btc_balance > 0:
 
-            if data.last_buy_price < data.sell < 1.02 * data.last_buy_price:
+            if 1.008 * data.last_buy_price < data.sell < 1.02 * data.last_buy_price:
 
                 if max_price(data.sell_prices) > 1.02 * data.last_buy_price:     # The sell prices exceeded the upper threshold before dropping thereby meeting the condition
 
@@ -220,7 +220,7 @@ def initiate_decisions():
 
     def action(data):
 
-        print("BTC sell price is between 100% and 102% of original buy price.\n")
+        print("{}\nBTC sell price is between 100.8% and 102% of original buy price and the Max Price has exceeded 102% only.\n".format(current_time()))
 
         #purge()
 

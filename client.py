@@ -10,6 +10,7 @@ import time
 import urllib
 import urllib2
 
+import common
 from secrets import api
 
 
@@ -131,11 +132,11 @@ def purge():
 
     while flag:
 
-        btc = balance()['btc_balance']      # No. of BTC still in account
+        btc = float(balance()['btc_balance'])      # No. of BTC still in account
 
         if btc > 0:
 
-            print("Remaining BTC: {}", btc)
+            print("Remaining BTC: {}".format(btc))
             cancel_all_orders()
 
             sell_price = current_price()['sell']
@@ -147,6 +148,39 @@ def purge():
 
             flag = False        # Break while loop
             print("Purge ends.\n")
+
+
+def acquire():
+    """
+    Method for acquiring all BTC as quickly as possible.
+    """
+
+    print("Beginning acquire")
+
+    flag = True
+
+    while flag:
+
+        usd = float(balance()['usd_balance'])      # Amount of USD still in account
+
+        if usd > 0:
+
+            print("Remaining USD: {}".format(usd))
+            cancel_all_orders()
+
+            buy_price = current_price()['buy']
+            btc = common.chop_btc(usd / buy_price)
+
+            print("Buying BTC: {}", btc)
+
+            buy_order(btc, buy_price)
+
+            time.sleep(5)           # Wait for 5 seconds before continuing
+
+        else:
+
+            flag = False        # Break while loop
+            print("Acquire ends.\n")
 
 
 
