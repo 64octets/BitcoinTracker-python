@@ -138,8 +138,10 @@ def purge():
         if btc > 0:
 
             print("Remaining BTC: {}".format(btc))
+            print("Previous sell price: {}".format(prev_sell_price))
 
-            sell_price = current_price()['sell']
+            sell_price = float(current_price()['sell'])
+            print("Current sell price: {}".format(sell_price))
 
             if sell_price < 0.9975 * prev_sell_price:            # The sell price has fallen and so the previous sell price will NOT trigger an actual sale (because of the way limit orders work) so we create a new order
 
@@ -182,7 +184,7 @@ def acquire():
             print("Remaining USD: {}".format(usd))
             cancel_all_orders()
 
-            buy_price = current_price()['buy']
+            buy_price = float(current_price()['buy'])
             btc = common.chop_btc(usd / buy_price)
 
             print("Buying BTC: {}", btc)
