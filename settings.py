@@ -17,3 +17,17 @@
 # Date: 2014-04-03
 #
 # Implements the various settings/values used to make determinations during the decision-making phase of the OODA cycle.
+
+
+# We set the margin within which the sell price is NOT changed in a purge.
+
+SELL_PRICE_DROP_FACTOR = 99.75 / 100            # The percentage of the sell price to which if it drops the purge needs to reset to the sell price.
+SELL_PRICE_RISE_FACTOR = 100.5 / 100            # The pecerntage of the sell price to which if it rises the purge is cancelled so that the price can be re-analyzed on the next OODA cycle.
+
+# We set the margin within which the buy price is NOT changed in an acquire.
+
+BUY_PRICE_DROP_FACTOR = 99.5 / 100              # The %age of the buy price to which if it drop the acquire is cancelled and the price can be re-analyzed on the next OODA cycle.
+BUY_PRICE_RISE_FACTOR = 100.25 / 100            # The %age of the buy price to which if it rises the acquire needs to reset to the new buy price otherwise we will be unable to buy btc.
+
+
+TRANSACTION_INTERVAL = 10           # The interval in seconds between updating the order in a purge or acquire

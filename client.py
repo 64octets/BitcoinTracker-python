@@ -12,6 +12,7 @@ import urllib2
 
 import common
 from secrets import api
+import settings
 
 
 
@@ -129,7 +130,7 @@ def purge():
     print("Beginning purge")
 
     flag = True
-    prev_sell_price = 1e6           # A very large number so that the condition is triggered the first time.
+    prev_sell_price = 1e9           # A very large number so that the condition is triggered the first time.
 
     while flag:
 
@@ -143,22 +144,22 @@ def purge():
             sell_price = float(current_price()['sell'])
             print("Current sell price: {}".format(sell_price))
 
-            if sell_price < 0.9975 * prev_sell_price:            # The sell price has fallen and so the previous sell price will NOT trigger an actual sale (because of the way limit orders work) so we create a new order
+            if sell_price < settings.SELL_PRICE_DROP_FACTOR * prev_sell_price:            # The sell price has fallen and so the previous sell price will NOT trigger an actual sale (because of the way limit orders work) so we create a new order
 
                 cancel_all_orders()
 
                 sell_order(btc, sell_price)
                 prev_sell_price = sell_price        # Update prev_sell_price for later comparison
 
-            elif sell_price > 1.005 * prev_sell_price:
+            elif sell_price > settings.SELL_PRICE_RISE_FACTOR * prev_sell_price:
 
-                print("Sell price has increased by more than 0.5%. Cancelling purge")
+                print("Sell price has increased to a factor of {}. Cancelling purge".format(settings.SELL_PRICE_RISE_FACTOR))
                 cancel_all_orders()
                 return
 
-            # NOTE: If the sell_price doesn't fall by more than 0.25% or rise by more than 0.5% we keep the same sell order active.
+            # NOTE: If the sell_price doesn't fall by more than DROP_FACTOR or rise by more than RISE_FACTOR we keep the same sell order active.
 
-            time.sleep(10)           # Wait for specified interval to allow sale to occur before continuing
+            time.sleep(settings.TRANSACTION_INTERVAL)           # Wait for specified interval to allow sale to occur before continuing
 
         else:
 
@@ -172,6 +173,7 @@ def acquire():
     """
 
     print("Beginning acquire")
+    prev_buy_price = 0                  # A very small number so that the condition is triggered the first time.
 
     flag = True
 
@@ -182,21 +184,35 @@ def acquire():
         if usd > 0:
 
             print("Remaining USD: {}".format(usd))
-            cancel_all_orders()
+            print("Previous buy price: {}".format(prev_buy_price))
 
             buy_price = float(current_price()['buy'])
-            btc = common.chop_btc(usd / buy_price)
+            btc = common.chop_btc(usd / buy_price)              # Calculate the correctly floored (rounded) amount of btc that can be bought at the current buy price
 
+            print("Current buy price: {}".format(buy_price))
             print("Buying BTC: {}", btc)
 
-            buy_order(btc, buy_price)
+            if buy_price > settings.BUY_PRICE_RISE_FACTOR * prev_buy_price:
 
-            time.sleep(5)           # Wait for 5 seconds before continuing
+                cancel_all_orders()
+
+                buy_order(btc, buy_price)
+                prev_buy_price = buy_price
+
+            elif buy_price < settings.BUY_PRICE_DROP_FACTOR * prev_buy_price:
+
+                print("Buy price has dropped to a factor of {}. Cancelling acquire.".format(settings.BUY_PRICE_DROP_FACTOR))
+                cancel_all_orders()
+                return
+
+            # NOTE: If the buy_price doesn't fall by more than DROP_FACTOR or rise by more than RISE_FACTOR we keep the same sell order active.
+
+            time.sleep(settings.TRANSACTION_INTERVAL)           # Wait for 5 seconds before continuing
 
         else:
 
             flag = False        # Break while loop
-            print("Acquire ends.\n")
+            print("All USD spent. Acquire ends.\n")
 
 
 
