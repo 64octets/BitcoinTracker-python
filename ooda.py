@@ -26,7 +26,7 @@ import client
 from models import Data, Decision
 import utilities.push_transactions
 
-from common import max_price, current_time, format_time
+from common import max_price, current_time
 
 
 def initiate_decisions():
@@ -90,13 +90,10 @@ def initiate_decisions():
 
         print("{}\nBTC sell price is between 100.8% and 102% of original buy price and the Max Price has exceeded 102% earlier.\n".format(current_time()))
 
-        #purge()
+        client.purge()
 
-        #client.cancel_all_orders()
-        #client.sell_order(data.btc_balance, data.sell)
-
-        ## Push transactions in to database to update it
-        #utilities.push_transactions.push()
+        # Push transactions in to database to update it
+        utilities.push_transactions.push()
 
 
     decisions.append( Decision(condition, action, True) )
