@@ -50,3 +50,14 @@ def current_time():
     """
 
     return datetime.datetime.fromtimestamp(time.time()).strftime("%m-%d %H:%M")
+
+
+def adjusted_usd_amount(usd_bal, fee):
+    """
+    Method for calculating the adjusted buy amount accounting for the fee.
+
+    Example: To buy $1000 worth of BTC with a fee of 0.32% means the adjusted amount should be 'x' such that (1 + fee/100) * x = 1000
+    """
+
+    return usd_bal / (1 + (fee / 100.0)) - 0.01       # Amount of USD that can be used to buy BTC once the fee has been subtracted
+                                                      # We subtract 0.01 from the amount to ensure that the final outcome is <= usd_bal when the equation is inverted by the backend to calculate the total amount.

@@ -25,6 +25,7 @@
 import client
 from models import Data, Decision
 import utilities.push_transactions
+import decisions.absolute_zero as absolute_zero
 
 from common import max_price, current_time
 
@@ -35,6 +36,8 @@ def initiate_decisions():
     """
 
     decisions = []
+
+    decisions.append( absolute_zero.decision )
 
     # If we have BTC and the sell price falls below 2% of the original (last) buy price the BTC must be sold immediately in anticipation of an upcoming slump.
     def condition(data):
