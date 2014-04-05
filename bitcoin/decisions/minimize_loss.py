@@ -30,11 +30,6 @@
 #   This decision is final (it overrides all remaining decisions).
 
 
-
-import common
-
-common.add_parent_to_path()
-
 import bitcoin.client as client
 from bitcoin.models import Decision
 from bitcoin.common import current_time

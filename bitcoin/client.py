@@ -9,11 +9,9 @@ import json
 import time
 import urllib
 import urllib2
+from bitcoin import settings, common
 
-import common
-from secrets import api
-import settings
-
+from bitcoin.secrets import api
 
 
 def credentials():

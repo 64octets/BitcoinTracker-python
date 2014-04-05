@@ -19,10 +19,11 @@
 # Implements the various models used in the application, in OODA in particular.
 
 
-import rpy2.robjects as robjects
 import sqlite3
 
-import common
+import rpy2.robjects as robjects
+
+from bitcoin import common
 import client
 
 

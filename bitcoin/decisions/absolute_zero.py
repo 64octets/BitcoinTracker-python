@@ -28,13 +28,10 @@
 #       Purge all BTC
 
 
-import common
-
-common.add_parent_to_path()
-
 import bitcoin.client as client
 import bitcoin.utilities.push_transactions as push_transactions
 from bitcoin.models import Decision
+from bitcoin.common import current_time
 
 
 # Define the necessary descriptive values:
@@ -56,6 +53,7 @@ def condition(data):        # Define the condition function of the Decision
 
         if data.sell < MINIMUM_THRESHOLD:
 
+            log(current_time())
             log("Sell price = ${} has fallen below the Min. Threshold = ${}".format(data.sell, MINIMUM_THRESHOLD))
 
             return True

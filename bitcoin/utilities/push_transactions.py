@@ -24,8 +24,7 @@
 
 
 import sqlite3
-
-import common
+from bitcoin.utilities import common
 
 common.add_parent_to_path()         # Add parent directory to Python Path to access package defined there-in
 

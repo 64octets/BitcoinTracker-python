@@ -22,15 +22,12 @@
 # This script fetches data from the BitStamp backedn API and prints it to stdout
 
 from datetime import datetime
-import json
 import sqlite3
 import sys
 import time
-import urllib2
 
-import client
-import common
-from utilities.weighted_average import single_weighted_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
+from bitcoin import common, client
+from bitcoin.utilities.weighted_average import single_weighted_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
 
 
 if __name__ == '__main__':

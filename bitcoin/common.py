@@ -15,7 +15,7 @@ def get_db():
     Gives the absolute path to the sqlite3 database used by the application.
     """
 
-    dirname = os.path.dirname(os.path.realpath(__file__))
+    dirname = os.path.dirname( os.path.dirname(os.path.realpath(__file__)) )        # The Database is in the parent of the folder contain this script
 
     return os.path.join(dirname, 'data.db')
 

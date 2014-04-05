@@ -24,7 +24,7 @@
 
 import sqlite3
 
-from weighted_average import weighted_running_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
+from bitcoin.utilities.weighted_average import weighted_running_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
 
 
 if __name__ == '__main__':

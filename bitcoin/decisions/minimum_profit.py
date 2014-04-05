@@ -28,10 +28,6 @@
 #       Purge all BTC (in the hopes of making a small profit - that cancels the fee)
 
 
-import common
-
-common.add_parent_to_path()
-
 import bitcoin.client as client
 import bitcoin.utilities.push_transactions as push_transactions
 from bitcoin.common import current_time, max_price

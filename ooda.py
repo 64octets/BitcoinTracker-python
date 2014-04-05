@@ -22,10 +22,11 @@
 # Implement the OODA loop (Observe-Orient-Decide-Act) for bitcoin exchange.
 
 
-from models import Data
-import decisions.absolute_zero as absolute_zero
-import decisions.minimize_loss as minimize_loss
-import decisions.minimum_profit as minimum_profit
+from bitcoin.models import Data
+
+import bitcoin.decisions.absolute_zero as absolute_zero
+import bitcoin.decisions.minimize_loss as minimize_loss
+import bitcoin.decisions.minimum_profit as minimum_profit
 
 
 def initiate_decisions():
