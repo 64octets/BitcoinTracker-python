@@ -227,7 +227,7 @@ def buy_for_usd(usd):
     fee = float(balance()['fee'])
     amount = bitcoin.adjusted_usd_amount(usd, fee)
 
-    buy_price = current_price()['buy']
+    buy_price = float(current_price()['buy'])
     btc = bitcoin.chop_btc(amount / buy_price)
 
     print("Buying {} btc at ${} at a cost of ${}".format(btc, buy_price, usd))
