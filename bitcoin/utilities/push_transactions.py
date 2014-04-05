@@ -24,17 +24,16 @@
 
 
 import sqlite3
-from bitcoin.utilities import common
 
-common.add_parent_to_path()         # Add parent directory to Python Path to access package defined there-in
 
-import bitcoin.common
+import bitcoin
 import bitcoin.client
+from bitcoin.utilities import unix_timestamp
 
 
 def push():
 
-    conn = sqlite3.connect( bitcoin.common.get_db() )
+    conn = sqlite3.connect( bitcoin.get_db() )
     cursor = conn.cursor()
 
     print("Fetching transactions from BitStamp server ...")
@@ -44,7 +43,7 @@ def push():
 
     for trx in data:
 
-        ts = common.unix_timestamp(trx['datetime'])
+        ts = unix_timestamp(trx['datetime'])
 
         cursor.execute('''REPLACE INTO "transactions" ("time", "usd", "btc", "rate") VALUES (?,?,?,?)''', (ts, trx['usd'], trx['btc'], trx['btc_usd']))
 

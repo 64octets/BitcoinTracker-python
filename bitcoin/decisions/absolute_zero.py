@@ -28,10 +28,10 @@
 #       Purge all BTC
 
 
+from bitcoin import current_time
 import bitcoin.client as client
-import bitcoin.utilities.push_transactions as push_transactions
 from bitcoin.models import Decision
-from bitcoin.common import current_time
+import bitcoin.utilities.push_transactions as push_transactions
 
 
 # Define the necessary descriptive values:

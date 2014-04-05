@@ -30,9 +30,9 @@
 #   This decision is final (it overrides all remaining decisions).
 
 
+from bitcoin import current_time
 import bitcoin.client as client
 from bitcoin.models import Decision
-from bitcoin.common import current_time
 import bitcoin.utilities.push_transactions as push_transactions
 
 

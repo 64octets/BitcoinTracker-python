@@ -23,15 +23,9 @@
 # information in a CSV file for inclusion in our spreadsheet.
 
 
+from dateutil.parser import parse
 import pytz
 import sys
-
-from dateutil.parser import parse
-
-from bitcoin.utilities import common
-
-
-common.add_parent_to_path()
 
 import bitcoin.client
 

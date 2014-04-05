@@ -26,7 +26,8 @@ import sqlite3
 import sys
 import time
 
-from bitcoin import common, client
+import bitcoin
+from bitcoin import client
 from bitcoin.utilities.weighted_average import single_weighted_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
 
 
@@ -42,7 +43,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1 and sys.argv[1] == '--insert':         # The --insert switch has been passed so we insert the data in to the sqlite3 database
 
-        conn = sqlite3.connect( common.get_db() )
+        conn = sqlite3.connect( bitcoin.get_db() )
         cursor = conn.cursor()
 
         # We pull previous (NUM_WEIGHING_SAMPLES - 1) prices to calculate the current weighted_average of the prices:

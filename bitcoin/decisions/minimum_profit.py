@@ -30,7 +30,7 @@
 
 import bitcoin.client as client
 import bitcoin.utilities.push_transactions as push_transactions
-from bitcoin.common import current_time, max_price
+from bitcoin import current_time, max_price
 from bitcoin.models import Decision
 
 

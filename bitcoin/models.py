@@ -23,8 +23,8 @@ import sqlite3
 
 import rpy2.robjects as robjects
 
-from bitcoin import common
-import client
+import bitcoin
+import bitcoin.client as client
 
 
 class Data:
@@ -40,7 +40,7 @@ class Data:
 
         #filepath = os.path.join(os.path.dirname(__file__), 'data.db')
 
-        conn = sqlite3.connect( common.get_db() )
+        conn = sqlite3.connect( bitcoin.get_db() )
         cursor = conn.cursor()
 
         values = cursor.execute('''SELECT "time", "buy", "sell" FROM "prices" ORDER BY "time" DESC LIMIT 1''').fetchone()
@@ -89,7 +89,7 @@ class Data:
         """
         String representation of the object.
         """
-        return "Timestamp: {ts}\n\nBuy: {buy}\nSell: {sell}\n\nUSD Balance: {usd}\nBTC Balance: {btc}\n\nLast Buy Price: {obuy}  {obtime}\nLast Sell Price: {osell}  {ostime}\n\nBuy Prices: {bprices}\nSell Prices: {sprices}".format(ts=common.format_time(self.time), buy=self.buy, sell=self.sell, usd=self.usd_balance, btc=self.btc_balance, obuy=self.last_buy_price, osell=self.last_sell_price, bprices=self.buy_prices, sprices=self.sell_prices, obtime=common.format_time(self.last_buy_time), ostime=common.format_time(self.last_sell_time))
+        return "Timestamp: {ts}\n\nBuy: {buy}\nSell: {sell}\n\nUSD Balance: {usd}\nBTC Balance: {btc}\n\nLast Buy Price: {obuy}  {obtime}\nLast Sell Price: {osell}  {ostime}\n\nBuy Prices: {bprices}\nSell Prices: {sprices}".format(ts=common.format_time(self.time), buy=self.buy, sell=self.sell, usd=self.usd_balance, btc=self.btc_balance, obuy=self.last_buy_price, osell=self.last_sell_price, bprices=self.buy_prices, sprices=self.sell_prices, obtime=bitcoin.format_time(self.last_buy_time), ostime=bitcoin.format_time(self.last_sell_time))
 
 
 

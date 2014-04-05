@@ -9,8 +9,9 @@ import json
 import time
 import urllib
 import urllib2
-from bitcoin import settings, common
 
+import bitcoin
+from bitcoin import settings
 from bitcoin.secrets import api
 
 
@@ -180,7 +181,7 @@ def acquire():
         bal = balance()
         usd = float(bal['usd_balance'])      # Amount of USD still in account
         fee = float(bal['fee'])              # %age of cost taken as transaction fee 
-        amount = common.adjusted_usd_amount(usd, fee)     # Amount of USD that can be used to buy BTC once the fee has been subtracted
+        amount = bitcoin.adjusted_usd_amount(usd, fee)     # Amount of USD that can be used to buy BTC once the fee has been subtracted
 
         if usd > 0.10:      # The way the fee is subtract a very small amount of usd might be left behind which we ignore
 
@@ -188,7 +189,7 @@ def acquire():
             print("Previous buy price: {}".format(prev_buy_price))
 
             buy_price = float(current_price()['buy'])
-            btc = common.chop_btc(amount / buy_price)              # Calculate the correctly floored (rounded) amount of btc that can be bought at the current buy price
+            btc = bitcoin.chop_btc(amount / buy_price)              # Calculate the correctly floored (rounded) amount of btc that can be bought at the current buy price
 
             print("Current buy price: {}".format(buy_price))
             print("Fee %age: {}".format(fee))
@@ -224,10 +225,10 @@ def buy_for_usd(usd):
     """
 
     fee = float(balance()['fee'])
-    amount = common.adjusted_usd_amount(usd, fee)
+    amount = bitcoin.adjusted_usd_amount(usd, fee)
 
     buy_price = current_price()['buy']
-    btc = common.chop_btc(amount / buy_price)
+    btc = bitcoin.chop_btc(amount / buy_price)
 
     print("Buying {} btc at ${} at a cost of ${}".format(btc, buy_price, usd))
 
