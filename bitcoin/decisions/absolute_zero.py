@@ -39,12 +39,14 @@ import bitcoin.utilities.push_transactions as push_transactions
 MINIMUM_THRESHOLD = 400         # Min value below which if the sell-price falls the purge should be initiated
 
 
-def log(msg):
+def log(msg, newline=False):
     """
     Method for logging messages from the decision.
     """
 
     print("[Absolute Zero] " + msg)
+
+    if newline: print    # If the flag is set print a new line
 
 
 def condition(data):        # Define the condition function of the Decision
@@ -54,7 +56,7 @@ def condition(data):        # Define the condition function of the Decision
         if data.sell < MINIMUM_THRESHOLD:
 
             log(current_time())
-            log("Sell price = ${} has fallen below the Min. Threshold = ${}".format(data.sell, MINIMUM_THRESHOLD))
+            log("Sell price = ${} has fallen below the Min. Threshold = ${}".format(data.sell, MINIMUM_THRESHOLD), True)
 
             return True
 

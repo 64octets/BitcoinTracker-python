@@ -42,12 +42,14 @@ DROP_FACTOR = 0.98      # The factor of the original buy price below which the s
                         # condition.
 
 
-def log(msg):
+def log(msg, newline=False):
     """
     Method for logging messages from the decision.
     """
 
     print("[Minimize Loss] " + msg)
+
+    if newline: print
 
 
 # If we have BTC and the sell price falls below 2% of the original (last) buy price the BTC must be sold immediately in
@@ -58,6 +60,7 @@ def condition(data):
 
         if data.sell < DROP_FACTOR * data.last_buy_price:
 
+            log(current_time())
             log("Original Buy Price: {obuy} - Current Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price)/data.last_buy_price * 100))
 
             return True
@@ -67,7 +70,7 @@ def condition(data):
 
 def action(data):
 
-    log("{}\nBTC sell price has fallen below a factor of {} of original buy price. Selling.\n".format(current_time(), DROP_FACTOR))
+    log("BTC sell price has fallen below a factor of {} of original buy price. Selling.\n".format(DROP_FACTOR), True)
 
     client.purge()      # We are in a rush to off-load so we purge all BTC
 

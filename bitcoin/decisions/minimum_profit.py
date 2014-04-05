@@ -41,13 +41,14 @@ BAND_LOWER = 1.008      # Lower bound is 0.8% above the orig. buy price (conside
 
 
 
-def log(msg):
+def log(msg, newline=False):
     """
     Method for logging messages from the decision.
     """
 
     print("[Minimum Profit] " + msg)
 
+    if newline: print
 
 
 def condition(data):
@@ -59,6 +60,7 @@ def condition(data):
             if max_price(data.sell_prices) > BAND_UPPER * data.last_buy_price:      # The sell prices exceeded the upper
                                                                                     # threshold before dropping
 
+                log(current_time())
                 log("Orig. Buy Price: {obuy} - Curr. Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price) / data.last_buy_price * 100))
 
                 log("Max Sell price: {}".format(max_price(data.sell_prices)))
@@ -70,7 +72,7 @@ def condition(data):
 
 def action(data):
 
-    log("{}\nBTC sell price is between {}% and {}% of orig. buy price and the Max Sell Price to date exceeds {}%.\n".format(current_time(), BAND_LOWER, BAND_UPPER, BAND_UPPER))
+    log("BTC sell price is between {}% and {}% of orig. buy price and the Max Sell Price to date exceeds {}%.\n".format(BAND_LOWER, BAND_UPPER, BAND_UPPER), True)
 
     client.purge()
 
