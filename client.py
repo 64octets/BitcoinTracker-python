@@ -219,6 +219,23 @@ def acquire():
             print("All USD spent. Acquire ends.\n")
 
 
+def buy_for_usd(usd):
+    """
+    Buys BTC at the current buy price for the specified amount inclusive of fees charged. So the exact amount specified
+    is bought.
+    """
+
+    fee = float(balance()['fee'])
+    amount = common.adjusted_usd_amount(usd, fee)
+
+    buy_price = current_price()['buy']
+    btc = common.chop_btc(amount / buy_price)
+
+    print("Buying {} btc at ${} at a cost of ${}".format(btc, buy_price, usd))
+
+    buy_order(btc, buy_price)
+
+
 
 def request(url, payload={}):
     """

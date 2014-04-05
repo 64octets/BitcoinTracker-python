@@ -33,7 +33,7 @@ import common
 common.add_parent_to_path()
 
 import bitcoin.client as client
-import bitcoin.utilities as utilities
+import bitcoin.utilities.push_transactions as push_transactions
 from bitcoin.common import current_time, max_price
 from bitcoin.models import Decision
 
@@ -78,7 +78,7 @@ def action(data):
 
     client.purge()
 
-    utilities.push_transactions.push()
+    push_transactions.push()
 
 
 decision = Decision(condition, action, True)

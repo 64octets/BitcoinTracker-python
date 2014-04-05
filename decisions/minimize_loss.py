@@ -38,7 +38,7 @@ common.add_parent_to_path()
 import bitcoin.client as client
 from bitcoin.models import Decision
 from bitcoin.common import current_time
-import bitcoin.utilities as utilities
+import bitcoin.utilities.push_transactions as push_transactions
 
 
 # Define the necessary descriptive values:
@@ -76,7 +76,7 @@ def action(data):
 
     client.purge()      # We are in a rush to off-load so we purge all BTC
 
-    utilities.push_transactions.push()      # Push transactions in to database to update it
+    push_transactions.push()      # Push transactions in to database to update it
 
 
 decision = Decision(condition, action, True)

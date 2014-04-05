@@ -33,7 +33,7 @@ import common
 common.add_parent_to_path()
 
 import bitcoin.client as client
-import bitcoin.utilities as utilities
+import bitcoin.utilities.push_transactions as push_transactions
 from bitcoin.models import Decision
 
 
@@ -67,7 +67,7 @@ def action(data):       # Define the action to be carried out if the condition i
 
     client.purge()      # Purge all BTC
 
-    utilities.push_transactions.push()      # Push transactions to database
+    push_transactions.push()      # Push transactions to database
 
 
 decision = Decision(condition, action, True)
