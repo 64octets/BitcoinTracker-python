@@ -167,6 +167,17 @@ def purge():
             print("All BTC sold. Purge ends.\n")
 
 
+def adjusted_usd_amount(usd_bal, fee):
+    """
+    Method for calculating the adjusted buy amount accounting for the fee.
+
+    Example: To buy $1000 worth of BTC with a fee of 0.32% means the adjusted amount should be 'x' such that (1 + fee/100) * x = 1000
+    """
+
+    return usd_bal / (1 + (fee / 100.0)) - 0.01       # Amount of USD that can be used to buy BTC once the fee has been subtracted
+                                                      # We subtract 0.01 from the amount to ensure that the final outcome is <= usd_bal when the equation is inverted by the backend to calculate the total amount.
+
+
 def acquire():
     """
     Method for acquiring all BTC as quickly as possible.
@@ -179,18 +190,22 @@ def acquire():
 
     while flag:
 
-        usd = float(balance()['usd_balance'])      # Amount of USD still in account
+        bal = balance()
+        usd = float(bal['usd_balance'])      # Amount of USD still in account
+        fee = float(bal['fee'])              # %age of cost taken as transaction fee 
+        amount = adjusted_usd_amount(usd, fee)     # Amount of USD that can be used to buy BTC once the fee has been subtracted
 
-        if usd > 0:
+        if usd > 0.10:      # The way the fee is subtract a very small amount of usd might be left behind which we ignore
 
             print("Remaining USD: {}".format(usd))
             print("Previous buy price: {}".format(prev_buy_price))
 
             buy_price = float(current_price()['buy'])
-            btc = common.chop_btc(usd / buy_price)              # Calculate the correctly floored (rounded) amount of btc that can be bought at the current buy price
+            btc = common.chop_btc(amount / buy_price)              # Calculate the correctly floored (rounded) amount of btc that can be bought at the current buy price
 
             print("Current buy price: {}".format(buy_price))
-            print("Buying BTC: {}", btc)
+            print("Fee %age: {}".format(fee))
+            print("Buying BTC: {}".format(btc))
 
             if buy_price > settings.BUY_PRICE_RISE_FACTOR * prev_buy_price:
 
