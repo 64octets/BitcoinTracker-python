@@ -26,14 +26,7 @@
 import rpy2.robjects as robjects
 import sqlite3
 
-from bitcoin import get_db
-
-
-def round2(x):
-    """
-    Utility method for rounding a float to 2 decimal places.
-    """
-    return round(x * 100) / 100.0
+from bitcoin import get_db, round2
 
 
 if __name__ == '__main__':

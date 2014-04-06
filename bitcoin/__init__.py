@@ -61,3 +61,10 @@ def adjusted_usd_amount(usd_bal, fee):
 
     return usd_bal / (1 + (fee / 100.0)) - 0.01       # Amount of USD that can be used to buy BTC once the fee has been subtracted
                                                       # We subtract 0.01 from the amount to ensure that the final outcome is <= usd_bal when the equation is inverted by the backend to calculate the total amount.
+
+
+def round2(x):
+    """
+    Utility method for rounding a float to 2 decimal places.
+    """
+    return round(x * 100) / 100.0

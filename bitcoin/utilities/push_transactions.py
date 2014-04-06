@@ -50,7 +50,7 @@ def push():
     conn.commit()
     conn.close()
 
-    print("Done")
+    print("Done\n")
 
 
 if __name__ == '__main__':

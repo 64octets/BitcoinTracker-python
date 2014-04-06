@@ -27,7 +27,7 @@ import sys
 import time
 
 import bitcoin
-from bitcoin import client
+from bitcoin import client, round2
 from bitcoin.utilities.weighted_average import single_weighted_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
 
 
@@ -64,7 +64,25 @@ if __name__ == '__main__':
         wsell = single_weighted_average(s_sell, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION)
 
 
+        # We JOIN the "prices" and "diffs" table NATURALly (which means on the common columns, in this case only "time") and then extract the latest value of the prices and 1st finite
+        # difference. We will use these to calculate the current 1st and 2nd finite differences.
+        values = cursor.execute('''SELECT "buy", "sell", "d1_buy", "d1_sell" FROM "prices" NATURAL JOIN "diffs" ORDER BY "time" DESC LIMIT 1''').fetchone()
+
+        last_buy = values[0]
+        last_sell = values[1]
+        last_d1_buy = values[2]
+        last_d1_sell = values[3]
+
+        d1_buy = round2( float(buy) - last_buy )             # Calculate the finite differences and round to 2 decimal places
+        d1_sell = round2( float(sell) - last_sell )
+
+        d2_buy = round2( d1_buy - last_d1_buy )
+        d2_sell = round2( d1_sell - last_d1_sell )
+
+
         cursor.execute('''INSERT INTO "prices" ("time", "buy", "sell", "wa_buy", "wa_sell") VALUES (?, ?, ?, ?, ?)''', (now, buy, sell, wbuy, wsell))
+
+        cursor.execute('''INSERT INTO "diffs" ("time", "d1_buy", "d1_sell", "d2_buy", "d2_sell") VALUES (?, ?, ?, ?, ?)''', (now, d1_buy, d1_sell, d2_buy, d2_sell))
 
         conn.commit()
         conn.close()
