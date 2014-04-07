@@ -1,6 +1,3 @@
-#! /usr/bin/python
-#
-#
 # Copyright 2014 Abid Hasan Mujtaba
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,8 +48,3 @@ def push():
     conn.close()
 
     print("Done\n")
-
-
-if __name__ == '__main__':
-
-    push()
