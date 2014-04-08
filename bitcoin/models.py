@@ -72,9 +72,11 @@ class Data:
 
         # Fetch all sell prices since the last time BTC was bought
         self.sell_prices = []
-        for values in cursor.execute('''SELECT "sell" FROM "prices" WHERE "time" > ?''', (self.last_buy_time, )):
+        self.weighted_sell_prices = []
+        for values in cursor.execute('''SELECT "sell", "wa_sell" FROM "prices" WHERE "time" > ?''', (self.last_buy_time, )):
 
             self.sell_prices.append(values[0])
+            self.weighted_sell_prices.append(values[1])
 
         # Convert array of prices in to R vectors
         self.buy_prices = robjects.FloatVector(self.buy_prices)

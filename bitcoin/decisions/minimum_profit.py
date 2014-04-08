@@ -21,7 +21,7 @@
 #   Implements the "Minimum Profit" decision where-in
 #
 #       if we have BTC balance and
-#       the sell price exceeds and returns to a narrow band above the original buy price
+#       the weighted sell price exceeds and the current sell price returns to a narrow band above the original buy price
 #
 #   Then
 #       Cancel all open orders
@@ -57,13 +57,12 @@ def condition(data):
 
         if BAND_LOWER * data.last_buy_price < data.sell < BAND_UPPER * data.last_buy_price:
 
-            if max_price(data.sell_prices) > BAND_UPPER * data.last_buy_price:      # The sell prices exceeded the upper
-                                                                                    # threshold before dropping
+            if max_price(data.weighted_sell_prices) > BAND_UPPER * data.last_buy_price:      # The weighted sell prices exceeded the upper threshold before dropping sometime in the past
 
                 log(current_time())
                 log("Orig. Buy Price: {obuy} - Curr. Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price) / data.last_buy_price * 100))
 
-                log("Max Sell price: {}".format(max_price(data.sell_prices)))
+                log("Max Weighted Sell price: {}".format(max_price(data.sell_prices)))
 
                 return True
 
