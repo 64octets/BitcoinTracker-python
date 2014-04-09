@@ -17,14 +17,24 @@
 #
 #
 # Author: Abid H. Mujtaba
-# Date: 2014-02-25
+# Date: 2014-04-08
 #
-# This script fetches transaction data from the BitStamp backend API and pushes it in to the database
+# This script prints a summary of the current state of the BitStamp account, basically displaying the current balance
+# prices and open orders
 
 
-import bitcoin.utilities.push_transactions as push_transactions
+import bitcoin.client as client
 
 
 if __name__ == '__main__':
 
-    push_transactions.push()
+    print("\nCurrent Price:\n")
+    print(client.current_price())
+
+    print("\n\nBalance:\n")
+    print(client.balance())
+
+    print("\n\nOpen Orders:\n")
+    print(client.open_orders())
+
+    print

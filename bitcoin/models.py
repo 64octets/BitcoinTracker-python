@@ -81,6 +81,7 @@ class Data:
         # Convert array of prices in to R vectors
         self.buy_prices = robjects.FloatVector(self.buy_prices)
         self.sell_prices = robjects.FloatVector(self.sell_prices)
+        self.weighted_sell_prices = robjects.FloatVector(self.weighted_sell_prices)
 
         cursor.close()
 

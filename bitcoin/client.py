@@ -224,16 +224,27 @@ def buy_for_usd(usd):
     is bought.
     """
 
+    buy_price = float(current_price()['buy'])       # Fetch current buy price
+
+    usd_buy_order(usd, buy_price)
+
+
+def usd_buy_order(usd, price):
+    """
+    Places a Buy Order for BTC at the specified price and such that the BTC bought costs the specified amount of USD,
+    taking the fee in to account.
+
+    So you can place a buy order for $1200 worth of BTC at $510.
+    """
+
     fee = float(balance()['fee'])
     amount = bitcoin.adjusted_usd_amount(usd, fee)
 
-    buy_price = float(current_price()['buy'])
-    btc = bitcoin.chop_btc(amount / buy_price)
+    btc = bitcoin.chop_btc(amount / price)
 
-    print("Buying {} btc at ${} at a cost of ${}".format(btc, buy_price, usd))
+    print("Buying {} btc at ${} at a cost of ${}".format(btc, price, usd))
 
-    buy_order(btc, buy_price)
-
+    buy_order(btc, price)
 
 
 def request(url, payload={}):
