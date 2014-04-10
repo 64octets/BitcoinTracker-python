@@ -13,6 +13,7 @@ import urllib2
 import bitcoin
 from bitcoin import settings
 from bitcoin.secrets import api
+from bitcoin.utilities import push_transactions as push_transactions
 
 
 def credentials():
@@ -183,7 +184,7 @@ def acquire():
         fee = float(bal['fee'])              # %age of cost taken as transaction fee 
         amount = bitcoin.adjusted_usd_amount(usd, fee)     # Amount of USD that can be used to buy BTC once the fee has been subtracted
 
-        if usd > 0.10:      # The way the fee is subtract a very small amount of usd might be left behind which we ignore
+        if usd > 1:      # BitStamp requires at least a $1 order (some small amount might be left once fees are calculated)
 
             print("Remaining USD: {}".format(usd))
             print("Previous buy price: {}".format(prev_buy_price))
@@ -195,25 +196,21 @@ def acquire():
             print("Fee %age: {}".format(fee))
             print("Buying BTC: {}".format(btc))
 
-            if buy_price > settings.BUY_PRICE_RISE_FACTOR * prev_buy_price:
+
+            if buy_price != prev_buy_price:       # If the buy price has changed we update the buy_order to ensure a quick acquire.
 
                 cancel_all_orders()
 
                 buy_order(btc, buy_price)
                 prev_buy_price = buy_price
 
-            elif buy_price < settings.BUY_PRICE_DROP_FACTOR * prev_buy_price:
-
-                print("Buy price has dropped to a factor of {}. Cancelling acquire.".format(settings.BUY_PRICE_DROP_FACTOR))
-                cancel_all_orders()
-                return
-
-            # NOTE: If the buy_price doesn't fall by more than DROP_FACTOR or rise by more than RISE_FACTOR we keep the same sell order active.
+                push_transactions.push(log=False)       # We push the transactions to update the latest buy price otherwise an automated purge may be triggered off of an old price
 
             time.sleep(settings.TRANSACTION_INTERVAL)           # Wait for 5 seconds before continuing
 
         else:
 
+            push_transactions.push(log=False)
             flag = False        # Break while loop
             print("All USD spent. Acquire ends.\n")
 

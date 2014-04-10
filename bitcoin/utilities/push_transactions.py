@@ -28,15 +28,19 @@ import bitcoin.client
 from bitcoin.utilities import unix_timestamp
 
 
-def push():
+def push(log=True):
+    """
+    Fetches transactions from BitStamp and pushes them in to the sqlite3 database where they are used to determine the
+    latest buy and sell prices.
+    """
 
     conn = sqlite3.connect( bitcoin.get_db() )
     cursor = conn.cursor()
 
-    print("Fetching transactions from BitStamp server ...")
+    if log: print("Fetching transactions from BitStamp server ...")
     data = bitcoin.client.transactions()
 
-    print("Inserting data in to 'transactions' table ...")
+    if log: print("Inserting data in to 'transactions' table ...")
 
     for trx in data:
 
@@ -47,4 +51,4 @@ def push():
     conn.commit()
     conn.close()
 
-    print("Done\n")
+    if log: print("Done\n")
