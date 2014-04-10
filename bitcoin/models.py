@@ -25,6 +25,7 @@ import rpy2.robjects as robjects
 
 import bitcoin
 import bitcoin.client as client
+import bitcoin.utilities.push_transactions as push_transactions
 
 
 class Data:
@@ -36,9 +37,10 @@ class Data:
         """
         Initialization method. Here is where we poll the database and the BitStamp API to collect relevant data.
         """
-        # The first step is to fetch current price data from the sqlite3 database
+        # The first step is to fetch and store transactions from the backend to ensure that our knowledge of transactional data is up to Date
+        push_transactions.push(log=False)
 
-        #filepath = os.path.join(os.path.dirname(__file__), 'data.db')
+        # The next step is to fetch current price data from the sqlite3 database
 
         conn = sqlite3.connect( bitcoin.get_db() )
         cursor = conn.cursor()

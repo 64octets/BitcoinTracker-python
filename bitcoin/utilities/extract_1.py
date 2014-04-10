@@ -19,19 +19,21 @@
 # Author: Abid H. Mujtaba
 # Date: 2014-03-27
 #
-# A script for extracting the last 2 hours of buy prices (120 samples) from the database and storing it in a file.
+# A script for extracting the last 3 hours of buy prices (180 samples) from the database and storing it in a file.
 
 
 import sqlite3
 
-SAMPLES = 720
+import bitcoin
+
+SAMPLES = 180
 
 
 if __name__ == '__main__':
 
     fout = open('prices.txt', 'w')
 
-    conn = sqlite3.connect('../data.db')
+    conn = sqlite3.connect(bitcoin.get_db())
     cursor = conn.cursor()
 
     for values in cursor.execute('''SELECT "buy" FROM (SELECT "time", "buy" FROM "prices" ORDER BY "time" DESC LIMIT ?) ORDER BY "time" ASC''', (SAMPLES,)):   # Get list of times in descending order

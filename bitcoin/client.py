@@ -13,7 +13,6 @@ import urllib2
 import bitcoin
 from bitcoin import settings
 from bitcoin.secrets import api
-#import bitcoin.utilities.push_transactions as push_transactions
 
 
 def credentials():
@@ -172,8 +171,6 @@ def acquire():
     Method for acquiring all BTC as quickly as possible.
     """
 
-    import bitcoin.utilities.push_transations as push_transactions
-
     print("Beginning acquire")
     prev_buy_price = 0                  # A very small number so that the condition is triggered the first time.
 
@@ -206,13 +203,10 @@ def acquire():
                 buy_order(btc, buy_price)
                 prev_buy_price = buy_price
 
-                push_transactions.push(log=False)       # We push the transactions to update the latest buy price otherwise an automated purge may be triggered off of an old price
-
             time.sleep(settings.TRANSACTION_INTERVAL)           # Wait for 5 seconds before continuing
 
         else:
 
-            push_transactions.push(log=False)
             flag = False        # Break while loop
             print("All USD spent. Acquire ends.\n")
 

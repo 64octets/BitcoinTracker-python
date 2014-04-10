@@ -36,7 +36,7 @@ import bitcoin.utilities.push_transactions as push_transactions
 
 # Define the necessary descriptive values:
 
-MINIMUM_THRESHOLD = 400         # Min value below which if the sell-price falls the purge should be initiated
+MINIMUM_THRESHOLD = 380         # Min value below which if the sell-price falls the purge should be initiated
 
 
 def log(msg, newline=False):
