@@ -37,7 +37,7 @@ from bitcoin.models import Decision
 
 # Define the necessary descriptive values:
 
-DROP_FACTOR = 0.96      # The factor of the original buy price below which the sell price must fall to trigger this
+DROP_FACTOR = 0.98      # The factor of the original buy price below which the sell price must fall to trigger this
                         # condition.
 
 

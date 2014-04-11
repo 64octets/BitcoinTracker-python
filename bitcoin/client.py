@@ -59,6 +59,14 @@ def balance():
     return request(url)
 
 
+def btc():
+    """
+    Returns btc balance as a Float.
+    """
+
+    return float(balance()['btc_balance'])
+
+
 def transactions():
     """
     Fetch the User Transaction history.
