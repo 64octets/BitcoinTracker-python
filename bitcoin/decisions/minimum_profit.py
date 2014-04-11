@@ -38,6 +38,8 @@ from bitcoin.models import Decision
 BAND_UPPER = 1.02       # Upper bound of band is 2% above the original buy price
 BAND_LOWER = 1.008      # Lower bound is 0.8% above the orig. buy price (considering the fee to be about 0.4% for both the buy and the sell)
 
+TRIGGER_THRESHOLD = 1.025       # Threshold Factor which must be crossed by the max avg sell price to trigger the band
+
 
 
 def log(msg, newline=False):
@@ -56,7 +58,7 @@ def condition(data):
 
         if BAND_LOWER * data.last_buy_price < data.sell < BAND_UPPER * data.last_buy_price:
 
-            if max_price(data.weighted_sell_prices) > BAND_UPPER * data.last_buy_price:      # The weighted sell prices exceeded the upper threshold before dropping sometime in the past
+            if max_price(data.weighted_sell_prices) > TRIGGER_THRESHOLD * data.last_buy_price:      # The weighted sell prices exceeded the upper threshold before dropping sometime in the past
 
                 log(current_time())
                 log("Orig. Buy Price: {obuy} - Curr. Sell Price: {sell} - Delta: {delta} - %age: {pct}".format(obuy=data.last_buy_price, sell=data.sell, delta=data.sell - data.last_buy_price, pct=(data.sell - data.last_buy_price) / data.last_buy_price * 100))
