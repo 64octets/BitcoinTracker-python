@@ -33,7 +33,6 @@
 from bitcoin import current_time
 import bitcoin.client as client
 from bitcoin.models import Decision
-import bitcoin.utilities.push_transactions as push_transactions
 
 
 # Define the necessary descriptive values:
@@ -73,8 +72,6 @@ def action(data):
     log("BTC sell price has fallen below a factor of {} of original buy price. Selling.\n".format(DROP_FACTOR), True)
 
     client.purge()      # We are in a rush to off-load so we purge all BTC
-
-    push_transactions.push()      # Push transactions in to database to update it
 
 
 decision = Decision(condition, action, True)

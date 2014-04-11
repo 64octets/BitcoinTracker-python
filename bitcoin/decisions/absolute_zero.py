@@ -31,7 +31,6 @@
 from bitcoin import current_time
 import bitcoin.client as client
 from bitcoin.models import Decision
-import bitcoin.utilities.push_transactions as push_transactions
 
 
 # Define the necessary descriptive values:
@@ -66,8 +65,6 @@ def condition(data):        # Define the condition function of the Decision
 def action(data):       # Define the action to be carried out if the condition is met
 
     client.purge()      # Purge all BTC
-
-    push_transactions.push()      # Push transactions to database
 
 
 decision = Decision(condition, action, True)
