@@ -43,14 +43,14 @@
 import json
 import redis
 
-from bitcoin import current_time
+from bitcoin import current_time, round2
 import bitcoin.client as client
 from bitcoin.models import Decision
 
 
 # Define the necessary descriptive values:
 
-ACTIVATION_THRESHOLD = 360         # Value above which if the avg sell price increases the selling/peak band is activated
+ACTIVATION_THRESHOLD = 427         # Value above which if the avg sell price increases the selling/peak band is activated
 UPPER_LIMIT_FACTOR = 1.01          # The factor by which the sell price is multiplied to get the new upper limit of the band
 
 REDIS_KEY = "rising_peak_band"
@@ -107,18 +107,27 @@ def condition(data):        # Define the condition function of the Decision
 
         if band:            # Since the data is in redis the band is active
 
-            if data.sell < band['lower'] or data.sell > band['upper']:      # If the sell-price has left the band we must take action
+            if data.sell < band['lower']:      # If the sell-price has fallen below the band we must take action
 
                 return True
 
-            delta = data.sell * UPPER_LIMIT_FACTOR - band['upper']      # Change in upper band based on the current sell price
+            delta = round2(data.sell * UPPER_LIMIT_FACTOR - band['upper'])      # Change in upper band based on the current sell price
 
             if delta > 0:       # If the sell price has increased such that the band is pushed upwards we update the band (it NEVER goes down)
 
                 band['upper'] += delta
                 band['lower'] += delta
 
+                log(current_time())
+                log("Delta = ${}. Pushing band up to: ${} - ${}.\n".format(delta, band['lower'], band['upper']))
+
                 push(band)
+
+                btc = client.btc()
+                client.cancel_all_orders()
+                client.sell_order(btc, round2(band['upper']))
+
+                log("New sell order created.")
 
         else:               # The band is inactive
 
@@ -130,6 +139,14 @@ def condition(data):        # Define the condition function of the Decision
                 b = {'lower': ACTIVATION_THRESHOLD, 'upper': data.sell * UPPER_LIMIT_FACTOR}       # Set band values
                 rds.set(REDIS_KEY, json.dumps(b))               # Convert dictionary to json string and store it in redis server
 
+                btc = client.btc()
+                client.cancel_all_orders()
+                client.sell_order(btc, round2(b['upper']))      # Set up a sell order for the upper band limit
+
+    else:
+
+        delete()        # There is no BTC so we explicitly call a delete() here to ensure that the band state is null if an external purge is called
+
     return False
 
 
@@ -139,18 +156,14 @@ def action(data):       # Define the action to be carried out if the condition i
 
     if data.sell < band['lower']:
 
-        log("Sell price = ${} has fallen below the band lower limit = ${}\nBegin purge.".format(data.sell, band['lower']))
-
-    elif data.sell > band['upper']:
-
-        log("Sell price = ${} has risen above the band upper limit = ${}\nBegin purge.".format(data.sell, band['upper']))
+        log("Sell price = ${} has fallen below the band lower limit = ${}".format(data.sell, band['lower']))
 
     else:
 
         log("ERROR")
         return
 
-    # client.purge()
+    client.purge()
     delete()
 
 
