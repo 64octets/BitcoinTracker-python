@@ -35,7 +35,7 @@ from bitcoin.models import Decision
 
 # Define the necessary descriptive values:
 
-MINIMUM_THRESHOLD = 340         # Min value below which if the sell-price falls the purge should be initiated
+MINIMUM_THRESHOLD = 400         # Min value below which if the sell-price falls the purge should be initiated
 
 
 def log(msg, newline=False):

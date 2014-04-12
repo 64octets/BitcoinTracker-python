@@ -63,8 +63,14 @@ def btc():
     """
     Returns btc balance as a Float.
     """
-
     return float(balance()['btc_balance'])
+
+
+def usd():
+    """
+    Returns usd balance as a Float.
+    """
+    return float(balance()['usd_balance'])
 
 
 def transactions():
