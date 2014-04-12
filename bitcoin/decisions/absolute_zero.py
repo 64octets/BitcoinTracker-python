@@ -29,7 +29,7 @@
 
 
 from bitcoin import current_time
-import bitcoin.client as client
+import bitcoin.actions as actions
 from bitcoin.models import Decision
 
 
@@ -64,7 +64,7 @@ def condition(data):        # Define the condition function of the Decision
 
 def action(data):       # Define the action to be carried out if the condition is met
 
-    client.purge()      # Purge all BTC
+    actions.purge()      # Purge all BTC
 
 
 decision = Decision(condition, action, True)

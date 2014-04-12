@@ -44,6 +44,7 @@ import json
 import redis
 
 from bitcoin import current_time, round2
+import bitcoin.actions as actions
 import bitcoin.client as client
 from bitcoin.models import Decision
 
@@ -143,10 +144,6 @@ def condition(data):        # Define the condition function of the Decision
                 client.cancel_all_orders()
                 client.sell_order(btc, round2(b['upper']))      # Set up a sell order for the upper band limit
 
-    else:
-
-        delete()        # There is no BTC so we explicitly call a delete() here to ensure that the band state is null if an external purge is called
-
     return False
 
 
@@ -163,7 +160,7 @@ def action(data):       # Define the action to be carried out if the condition i
         log("ERROR")
         return
 
-    client.purge()
+    actions.purge()
     delete()
 
 

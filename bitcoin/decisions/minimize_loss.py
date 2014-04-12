@@ -31,7 +31,7 @@
 
 
 from bitcoin import current_time
-import bitcoin.client as client
+import bitcoin.actions as actions
 from bitcoin.models import Decision
 
 
@@ -71,7 +71,7 @@ def action(data):
 
     log("BTC sell price has fallen below a factor of {} of original buy price. Selling.\n".format(DROP_FACTOR), True)
 
-    client.purge()      # We are in a rush to off-load so we purge all BTC
+    actions.purge()      # We are in a rush to off-load so we purge all BTC
 
 
 decision = Decision(condition, action, True)

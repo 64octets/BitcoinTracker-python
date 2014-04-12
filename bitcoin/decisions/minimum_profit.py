@@ -28,7 +28,7 @@
 #       Purge all BTC (in the hopes of making a small profit - that cancels the fee)
 
 
-import bitcoin.client as client
+import bitcoin.actions as actions
 from bitcoin import current_time, max_price
 from bitcoin.models import Decision
 
@@ -74,7 +74,7 @@ def action(data):
 
     log("BTC sell price is between {}% and {}% of orig. buy price and the Max Sell Price to date exceeds {}%.\n".format(BAND_LOWER, BAND_UPPER, BAND_UPPER), True)
 
-    client.purge()
+    actions.purge()
 
 
 decision = Decision(condition, action, True)
