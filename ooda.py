@@ -28,6 +28,7 @@ import bitcoin.decisions.absolute_zero as absolute_zero
 import bitcoin.decisions.minimize_loss as minimize_loss
 import bitcoin.decisions.minimum_profit as minimum_profit
 import bitcoin.decisions.rising_peak as rising_peak
+import bitcoin.decisions.falling_trench as falling_trench
 
 
 def initiate_decisions():
@@ -41,6 +42,7 @@ def initiate_decisions():
     decisions.append( minimize_loss.decision )
     decisions.append( minimum_profit.decision )
     decisions.append( rising_peak.decision )
+    decisions.append( falling_trench.decision )
 
     return decisions
 

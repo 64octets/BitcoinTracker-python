@@ -51,7 +51,7 @@ from bitcoin.models import Decision
 
 # Define the necessary descriptive values:
 
-ACTIVATION_THRESHOLD = 432         # Value above which if the avg sell price increases the selling/peak band is activated
+ACTIVATION_THRESHOLD = 413         # Value above which if the avg sell price increases the selling/peak band is activated
 UPPER_LIMIT_FACTOR = 1.01          # The factor by which the sell price is multiplied to get the new upper limit of the band
 
 REDIS_KEY = "rising_peak_band"

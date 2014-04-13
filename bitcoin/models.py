@@ -45,12 +45,13 @@ class Data:
         conn = sqlite3.connect( bitcoin.get_db() )
         cursor = conn.cursor()
 
-        values = cursor.execute('''SELECT "time", "buy", "sell", "wa_sell" FROM "prices" ORDER BY "time" DESC LIMIT 1''').fetchone()
+        values = cursor.execute('''SELECT "time", "buy", "sell", "wa_buy", "wa_sell" FROM "prices" ORDER BY "time" DESC LIMIT 1''').fetchone()
 
         self.time = values[0]
         self.buy = values[1]
         self.sell = values[2]
-        self.avg_sell = values[3]
+        self.avg_buy = values[3]
+        self.avg_sell = values[4]
 
         # Use BitStamp API client to fetch the USD and BTC balance
         bal = client.balance()
