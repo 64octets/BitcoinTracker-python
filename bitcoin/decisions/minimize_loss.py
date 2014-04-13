@@ -33,11 +33,12 @@
 from bitcoin import current_time
 import bitcoin.actions as actions
 from bitcoin.models import Decision
+import bitcoin.redis_client as redis_client
 
 
 # Define the necessary descriptive values:
 
-DROP_FACTOR = 0.97      # The factor of the original buy price below which the sell price must fall to trigger this
+DROP_FACTOR = redis_client.minimize_loss_drop_factor()      # The factor of the original buy price below which the sell price must fall to trigger this
                         # condition.
 
 

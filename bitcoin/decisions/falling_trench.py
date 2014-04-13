@@ -41,24 +41,24 @@
 
 
 import json
-import redis
 
 from bitcoin import current_time, round2
 import bitcoin.actions as actions
 import bitcoin.client as client
+import bitcoin.redis_client as redis_client
 from bitcoin.models import Decision
 
 
 # Define the necessary descriptive values:
 
-ACTIVATION_THRESHOLD = 400         # Value above which if the avg sell price increases the selling/peak band is activated
-LOWER_LIMIT_FACTOR = 0.99          # The factor by which the buy price is multiplied to get the new lower limit of the band
+ACTIVATION_THRESHOLD = redis_client.falling_trench_activation_threshold()       # Value below which if the avg buy price decreases the buying/trench band is activated
+LOWER_LIMIT_FACTOR = redis_client.falling_trench_lower_limit_factor()          # The factor by which the buy price is multiplied to get the new lower limit of the band
 
 REDIS_KEY = "falling_trench_band"
 
 
 # Define the handle for the redis database
-rds = redis.StrictRedis(host='localhost', port=6379, db=0)
+rds = redis_client.rds
 
 
 def log(msg, newline=False):

@@ -30,12 +30,13 @@
 
 from bitcoin import current_time
 import bitcoin.actions as actions
+import bitcoin.redis_client as redis_client
 from bitcoin.models import Decision
 
 
 # Define the necessary descriptive values:
 
-MINIMUM_THRESHOLD = 380         # Min value below which if the sell-price falls the purge should be initiated
+MINIMUM_THRESHOLD = redis_client.absolute_zero_min_threshold()      #         # Min value below which if the sell-price falls the purge should be initiated
 
 
 def log(msg, newline=False):

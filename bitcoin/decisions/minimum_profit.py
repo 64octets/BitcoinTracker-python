@@ -31,14 +31,15 @@
 import bitcoin.actions as actions
 from bitcoin import current_time, max_price
 from bitcoin.models import Decision
+import bitcoin.redis_client as redis_client
 
 
 # Define the necessary descriptive values:
 
-BAND_UPPER = 1.02       # Upper bound of band is 2% above the original buy price
-BAND_LOWER = 1.008      # Lower bound is 0.8% above the orig. buy price (considering the fee to be about 0.4% for both the buy and the sell)
+BAND_UPPER = redis_client.min_profit_band_upper_factor()       # Upper bound of band is 2% above the original buy price
+BAND_LOWER = redis_client.min_profit_band_lower_factor()      # Lower bound is 0.8% above the orig. buy price (considering the fee to be about 0.4% for both the buy and the sell)
 
-TRIGGER_THRESHOLD = 1.025       # Threshold Factor which must be crossed by the max avg sell price to trigger the band
+TRIGGER_THRESHOLD = redis_client.min_profit_trigger_threshold()      # Threshold Factor which must be crossed by the max avg sell price to trigger the band
 
 
 

@@ -47,12 +47,13 @@ from bitcoin import current_time, round2
 import bitcoin.actions as actions
 import bitcoin.client as client
 from bitcoin.models import Decision
+import bitcoin.redis_client as redis_client
 
 
 # Define the necessary descriptive values:
 
-ACTIVATION_THRESHOLD = 413         # Value above which if the avg sell price increases the selling/peak band is activated
-UPPER_LIMIT_FACTOR = 1.01          # The factor by which the sell price is multiplied to get the new upper limit of the band
+ACTIVATION_THRESHOLD = redis_client.rising_peak_activiation_threshold()         # Value above which if the avg sell price increases the selling/peak band is activated
+UPPER_LIMIT_FACTOR = redis_client.rising_peak_upper_limit_factor()          # The factor by which the sell price is multiplied to get the new upper limit of the band
 
 REDIS_KEY = "rising_peak_band"
 
