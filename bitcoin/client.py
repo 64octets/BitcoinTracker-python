@@ -178,6 +178,8 @@ def request(url, payload={}):
     fin = urllib2.urlopen(url, data)
     jResponse = fin.readlines()
 
+    #print("{}\n{}\n".format(url, jResponse))
+
     response = json.loads( jResponse[0] )
 
     if type(response) == dict and 'error' in response.keys():

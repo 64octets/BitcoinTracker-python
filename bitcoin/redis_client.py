@@ -23,6 +23,28 @@ def dump():
         print("{}: {}".format(k, rds.get(k)))
 
 
+def change():
+    """
+    Method for listing and allowing the user to change ONE of the values in redis.
+    """
+    keys = rds.keys()
+    keys.sort()
+
+    for ii in range(len(keys)):                                             # Print keys with associated values indexed by an integer for choosing.
+        print("{} - {}: {}".format(ii, keys[ii], rds.get(keys[ii])))
+
+    jj = raw_input("\nIndex? ")
+    jj = int(jj)
+
+    v = raw_input("\n{} [{}]? ".format(keys[jj], rds.get(keys[jj])))
+
+    if len(v) > 0:              # If an empty string (simply an ENTER has been pressed) is present it means keep the default value
+
+        v = float(v)
+        rds.set(keys[jj], v)
+
+
+
 def load():
     """
     Method for loading default values in to redis. Used if redis database is ever cleared.
@@ -44,7 +66,7 @@ def load():
 KEY_RISING_PEAK_ACTIVATION_THRESHOLD = "rising_peak_activiation_threshold"
 KEY_RISING_PEAK_UPPER_LIMIT_FACTOR = "rising_peak_upper_limit_factor"
 
-def rising_peak_activiation_threshold(): return int(rds.get(KEY_RISING_PEAK_ACTIVATION_THRESHOLD))
+def rising_peak_activiation_threshold(): return float(rds.get(KEY_RISING_PEAK_ACTIVATION_THRESHOLD))
 
 def rising_peak_upper_limit_factor():  return float(rds.get(KEY_RISING_PEAK_UPPER_LIMIT_FACTOR))
 
@@ -56,7 +78,7 @@ KEY_FALLING_TRENCH_LOWER_LIMIT_FACTOR = "falling_trench_lower_limit_factor"
 
 def falling_trench_activation_threshold():
 
-    return int(rds.get(KEY_FALLING_TRENCH_ACTIVATION_THRESHOLD))
+    return float(rds.get(KEY_FALLING_TRENCH_ACTIVATION_THRESHOLD))
 
 def falling_trench_lower_limit_factor():  return float(rds.get(KEY_FALLING_TRENCH_LOWER_LIMIT_FACTOR))
 
@@ -65,7 +87,7 @@ def falling_trench_lower_limit_factor():  return float(rds.get(KEY_FALLING_TRENC
 # Define the key and function for accessing Absolute Zero Activation Threshold
 KEY_ABSOLUTE_ZERO_MINIMUM_THRESHOLD = "absolute_zero_min_threshold"
 
-def absolute_zero_min_threshold():  return int(rds.get(KEY_ABSOLUTE_ZERO_MINIMUM_THRESHOLD))
+def absolute_zero_min_threshold():  return float(rds.get(KEY_ABSOLUTE_ZERO_MINIMUM_THRESHOLD))
 
 
 
