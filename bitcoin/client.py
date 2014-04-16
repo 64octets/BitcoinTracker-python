@@ -6,12 +6,20 @@
 import hashlib
 import hmac
 import json
+import sys
 import time
 import urllib
 import urllib2
 
 import bitcoin
 from bitcoin.secrets import api
+
+
+def warning(msg):
+    """
+    Method for printing a warning to stderr.
+    """
+    sys.stderr.write("WARNING: " + msg + "\n")
 
 
 def credentials():
@@ -180,7 +188,13 @@ def request(url, payload={}):
 
     #print("{}\n{}\n".format(url, jResponse))
 
-    response = json.loads( jResponse[0] )
+    try:
+        response = json.loads( jResponse[0] )
+
+    except ValueError:
+
+        warning("{}\n{}\n".format(url, jResponse))      # Print warning and exit the program
+        sys.exit(1)
 
     if type(response) == dict and 'error' in response.keys():
 

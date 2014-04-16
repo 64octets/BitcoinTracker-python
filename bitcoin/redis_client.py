@@ -3,6 +3,7 @@
 #
 # This module implements a client that communicates with the redis database used to store state.
 
+import re
 import redis
 
 
@@ -27,13 +28,19 @@ def change():
     """
     Method for listing and allowing the user to change ONE of the values in redis.
     """
+    reActive = re.compile("^active_.*")
+
     keys = rds.keys()
+    keys = [k for k in keys if not reActive.match(k)]
     keys.sort()
 
     for ii in range(len(keys)):                                             # Print keys with associated values indexed by an integer for choosing.
         print("{} - {}: {}".format(ii, keys[ii], rds.get(keys[ii])))
 
     jj = raw_input("\nIndex? ")
+
+    if len(jj) == 0: return         # If an empty string (simply an ENTER has been pressed) it indicates no choice was made and so we exit
+
     jj = int(jj)
 
     v = raw_input("\n{} [{}]? ".format(keys[jj], rds.get(keys[jj])))
@@ -42,6 +49,31 @@ def change():
 
         v = float(v)
         rds.set(keys[jj], v)
+
+
+def toggle():
+    """
+    Method for listing and toggling the active flags of the decisions.
+    """
+    reActive = re.compile("^active_.*")
+
+    keys = rds.keys()
+    keys = [k for k in keys if reActive.match(k)]
+    keys.sort()
+
+    for ii in range(len(keys)):
+        print("{} - {}: {}".format(ii, keys[ii], rds.get(keys[ii])))
+
+    jj = raw_input("\nIndex? ")
+
+    if len(jj) == 0: return
+
+    jj = int(jj)
+    v = rds.get(keys[jj]) == 'True'         # Convert the string to boolean by performing a comparison
+
+    rds.set(keys[jj], not v)      # Flip/Toggle the specified value
+
+    print("{} set to {}".format(keys[jj], not v))
 
 
 
@@ -59,6 +91,33 @@ def load():
     rds.set(KEY_MIN_PROFIT_BAND_LOWER_FACTOR, 1.008)
     rds.set(KEY_MIN_PROFIT_BAND_UPPER_FACTOR, 1.02)
     rds.set(KEY_MIN_PROFIT_TRIGGER_THRESHOLD, 1.025)
+
+    rds.set(KEY_ACTIVE_ABSOLUTE_ZERO, True)
+    rds.set(KEY_ACTIVE_MINIMIZE_LOSS, True)
+    rds.set(KEY_ACTIVE_MINIMUM_PROFIT, True)
+    rds.set(KEY_ACTIVE_RISING_PEAK, True)
+    rds.set(KEY_ACTIVE_FALLING_TRENCH, True)
+
+
+# Activation keys and functions
+
+KEY_ACTIVE_ABSOLUTE_ZERO = "active_absolute_zero"
+def active_absolute_zero(): return bool(rds.get(KEY_ACTIVE_ABSOLUTE_ZERO))
+
+KEY_ACTIVE_MINIMIZE_LOSS = "active_minimize_loss"
+def active_minimize_loss(): return bool(rds.get(KEY_ACTIVE_MINIMIZE_LOSS))
+
+KEY_ACTIVE_MINIMUM_PROFIT = "active_min_profit"
+def active_minimum_profit(): return bool(rds.get(KEY_ACTIVE_MINIMUM_PROFIT))
+
+KEY_ACTIVE_RISING_PEAK = "active_rising_peak"
+def active_rising_peak(): return bool(rds.get(KEY_ACTIVE_RISING_PEAK))
+
+KEY_ACTIVE_FALLING_TRENCH = "active_falling_trench"
+def active_falling_trench(): return bool(rds.get(KEY_ACTIVE_FALLING_TRENCH))
+
+
+
 
 
 
