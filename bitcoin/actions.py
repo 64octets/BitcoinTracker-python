@@ -48,7 +48,7 @@ def purge():
             sell_price = float(client.current_price()['sell'])
             print("Current sell price: {}".format(sell_price))
 
-            if sell_price < settings.SELL_PRICE_DROP_FACTOR * prev_sell_price:            # The sell price has fallen and so the previous sell price will NOT trigger an actual sale (because of the way limit orders work) so we create a new order
+            if sell_price < prev_sell_price:            # The sell price has fallen and so the previous sell price will NOT trigger an actual sale (because of the way limit orders work) so we create a new order
 
                 client.cancel_all_orders()
 

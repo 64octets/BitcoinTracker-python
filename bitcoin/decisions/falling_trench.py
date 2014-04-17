@@ -53,6 +53,7 @@ from bitcoin.models import Decision
 
 ACTIVATION_THRESHOLD = redis_client.falling_trench_activation_threshold()       # Value below which if the avg buy price decreases the buying/trench band is activated
 LOWER_LIMIT_FACTOR = redis_client.falling_trench_lower_limit_factor()          # The factor by which the buy price is multiplied to get the new lower limit of the band
+UPPER_LIMIT_FACTOR = redis_client.falling_trench_upper_limit_factor()           # The factor by which the buy price is multiplied to get the new upper limit of the band
 
 REDIS_KEY = "falling_trench_band"
 
@@ -118,6 +119,11 @@ def condition(data):        # Define the condition function of the Decision
 
                 band['upper'] -= delta
                 band['lower'] -= delta
+
+                if band['upper'] > 1.005 * data.buy:     # Ensure that the upper band is not more than 0.5% above the current buy price
+
+                    band['upper'] = 1.005 * data.buy
+                    log("Calculated upper limit > 1.005 times buy price. Adjusting.")
 
                 log(current_time())
                 log("Delta = -${}. Pushing band down to: ${} - ${}.\n".format(delta, band['lower'], band['upper']))

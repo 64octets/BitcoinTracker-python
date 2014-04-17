@@ -19,19 +19,21 @@
 # Author: Abid H. Mujtaba
 # Date: 2014-04-02
 #
-# A script for extracting the last 1 hour of sell prices (60 samples) from the database and storing it in a file.
+# A script for extracting the last 6 hours of sell prices (6 * 60 samples) from the database and storing it in a file.
 
 
 import sqlite3
 
-SAMPLES = 60
+import bitcoin
+
+SAMPLES = 6 * 60
 
 
 if __name__ == '__main__':
 
-    fout = open('prices.txt', 'w')
+    fout = open('sell.txt', 'w')
 
-    conn = sqlite3.connect('../data.db')
+    conn = sqlite3.connect(bitcoin.get_db())
     cursor = conn.cursor()
 
     for values in cursor.execute('''SELECT "sell" FROM (SELECT "time", "sell" FROM "prices" ORDER BY "time" DESC LIMIT ?) ORDER BY "time" ASC''', (SAMPLES,)):   # Get list of times in descending order

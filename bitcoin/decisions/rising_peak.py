@@ -54,6 +54,7 @@ import bitcoin.redis_client as redis_client
 
 ACTIVATION_THRESHOLD = redis_client.rising_peak_activiation_threshold()         # Value above which if the avg sell price increases the selling/peak band is activated
 UPPER_LIMIT_FACTOR = redis_client.rising_peak_upper_limit_factor()          # The factor by which the sell price is multiplied to get the new upper limit of the band
+LOWER_LIMIT_FACTOR = redis_client.rising_peak_lower_limit_factor()          # The factor by which the sell price is multiplied to get the new lower limit of the band
 
 REDIS_KEY = "rising_peak_band"
 
@@ -120,8 +121,8 @@ def condition(data):        # Define the condition function of the Decision
                 band['upper'] += delta
                 band['lower'] += delta
 
-                log(current_time())
-                log("Delta = ${}. Pushing band up to: ${} - ${}.\n".format(delta, band['lower'], band['upper']))
+                log("\n" + current_time())
+                log("Delta = ${}. Pushing band up to: ${} - ${}.".format(delta, band['lower'], band['upper']))
 
                 push(band)
 
@@ -129,16 +130,14 @@ def condition(data):        # Define the condition function of the Decision
                 client.cancel_all_orders()
                 client.sell_order(btc, round2(band['upper']))
 
-                log("New sell order created.")
-
         else:               # The band is inactive
 
-            if data.avg_sell > ACTIVATION_THRESHOLD:        # Avg Sell is above Activation Threshold so we activate the band
+            if data.sell > ACTIVATION_THRESHOLD:        # Avg Sell is above Activation Threshold so we activate the band
 
-                log(current_time())
-                log("Avg Sell price = ${} has risen above the Activation Threshold = ${}".format(data.avg_sell, ACTIVATION_THRESHOLD), True)
+                log("\n" + current_time())
+                log("Sell price = ${} has risen above the Activation Threshold = ${}".format(data.sell, ACTIVATION_THRESHOLD), True)
 
-                b = {'lower': ACTIVATION_THRESHOLD, 'upper': data.sell * UPPER_LIMIT_FACTOR}       # Set band values
+                b = {'lower': data.sell * LOWER_LIMIT_FACTOR, 'upper': data.sell * UPPER_LIMIT_FACTOR}       # Set band values
                 rds.set(REDIS_KEY, json.dumps(b))               # Convert dictionary to json string and store it in redis server
 
                 btc = client.btc()

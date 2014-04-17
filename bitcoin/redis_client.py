@@ -84,8 +84,10 @@ def load():
 
     rds.set(KEY_RISING_PEAK_ACTIVATION_THRESHOLD, 415)
     rds.set(KEY_RISING_PEAK_UPPER_LIMIT_FACTOR, 1.01)
+    rds.set(KEY_RISING_PEAK_LOWER_LIMIT_FACTOR, 0.9925)
     rds.set(KEY_FALLING_TRENCH_ACTIVATION_THRESHOLD, 410)
     rds.set(KEY_FALLING_TRENCH_LOWER_LIMIT_FACTOR, 0.99)
+    rds.set(KEY_FALLING_TRENCH_UPPER_LIMIT_FACTOR, 1.0075)
     rds.set(KEY_ABSOLUTE_ZERO_MINIMUM_THRESHOLD, 380)
     rds.set(KEY_MINIMIZE_LOSS_DROP_FACTOR, 0.97)
     rds.set(KEY_MIN_PROFIT_BAND_LOWER_FACTOR, 1.008)
@@ -124,22 +126,26 @@ def active_falling_trench(): return bool(rds.get(KEY_ACTIVE_FALLING_TRENCH))
 # Define the key and function for accessing Rising Peak Activiation Threshold
 KEY_RISING_PEAK_ACTIVATION_THRESHOLD = "rising_peak_activiation_threshold"
 KEY_RISING_PEAK_UPPER_LIMIT_FACTOR = "rising_peak_upper_limit_factor"
+KEY_RISING_PEAK_LOWER_LIMIT_FACTOR = "rising_peak_lower_limit_factor"
 
 def rising_peak_activiation_threshold(): return float(rds.get(KEY_RISING_PEAK_ACTIVATION_THRESHOLD))
 
 def rising_peak_upper_limit_factor():  return float(rds.get(KEY_RISING_PEAK_UPPER_LIMIT_FACTOR))
+
+def rising_peak_lower_limit_factor():  return float(rds.get(KEY_RISING_PEAK_LOWER_LIMIT_FACTOR))
 
 
 
 # Define the key and function for accessing Falling Trench Activation Threshold
 KEY_FALLING_TRENCH_ACTIVATION_THRESHOLD = "falling_trench_activation_threshold"
 KEY_FALLING_TRENCH_LOWER_LIMIT_FACTOR = "falling_trench_lower_limit_factor"
+KEY_FALLING_TRENCH_UPPER_LIMIT_FACTOR = "falling_trench_upper_limit_factor"
 
-def falling_trench_activation_threshold():
-
-    return float(rds.get(KEY_FALLING_TRENCH_ACTIVATION_THRESHOLD))
+def falling_trench_activation_threshold():  return float(rds.get(KEY_FALLING_TRENCH_ACTIVATION_THRESHOLD))
 
 def falling_trench_lower_limit_factor():  return float(rds.get(KEY_FALLING_TRENCH_LOWER_LIMIT_FACTOR))
+
+def falling_trench_upper_limit_factor():  return float(rds.get(KEY_FALLING_TRENCH_UPPER_LIMIT_FACTOR))
 
 
 
