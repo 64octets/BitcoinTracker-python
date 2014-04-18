@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-from weighted_average import weighted_running_average
+from bitcoin.utilities.moving_averages import moving_average
 
 
 if __name__ == '__main__':
@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
     series = pd.Series(prices)
 
-    sma = weighted_running_average(series, 10)
-    lma = weighted_running_average(series, 25)
+    sma = moving_average(series, 10)
+    lma = moving_average(series, 25)
 
     sma = pd.Series(sma)
     lma = pd.Series(lma)
