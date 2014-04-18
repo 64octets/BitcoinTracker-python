@@ -22,6 +22,9 @@
 # This module implements utilities for calculating the moving average of a data series.
 
 
+from bitcoin import round2
+
+
 def moving_average(series, N):
     """
     Calculates the Weighted Moving Average of a series over the last N values using a linear weighing function.
@@ -37,14 +40,14 @@ def moving_average(series, N):
 
         for jj in range(N):
 
-            if (ii - jj) < 0:
+            if (ii - jj) < 0:       # If past values are not available we stop adding them to sum. We will get a truncated moving average for the first N values
 
                 break
 
             sum += series[ii - jj] * weighing_function(jj)       # Multiply value by weight calculated accordingly to distance from main value
             denom += weighing_function(jj)
 
-        weighted_series.append( round( sum / float(denom), 2) )     # Append the calculated weighted sum (rounded to 2 decimal places) to the output series
+        weighted_series.append( round2( sum / float(denom) ) )     # Append the calculated weighted sum (rounded to 2 decimal places) to the output series
 
     return weighted_series
 
@@ -52,7 +55,9 @@ def moving_average(series, N):
 
 def latest_moving_average(series, N):
     """
-    Calculates the linearly weighed moving average of the last sample in the series using the previous (N-1) samples.
+    Calculates the linearly weighed moving average of the first sample in the series using the next (N-1) samples.
+
+    This function assumes that the series is ordered in REVERSE chronological order.
     """
     weighing_function = lambda x: (N - x)
 
@@ -64,4 +69,4 @@ def latest_moving_average(series, N):
         sum += series[ii] * weighing_function(ii)
         denom += weighing_function(ii)
 
-    return round( sum / float(denom), 2 )
+    return round2( sum / float(denom) )

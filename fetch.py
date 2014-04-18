@@ -28,7 +28,9 @@ import time
 
 import bitcoin
 from bitcoin import client, round2
+from bitcoin.settings import SMA_SAMPLES, LMA_SAMPLES
 from bitcoin.utilities.weighted_average import single_weighted_average, NUM_WEIGHING_SAMPLES, WEIGHING_FUNCTION
+from bitcoin.utilities.moving_averages import latest_moving_average
 
 
 if __name__ == '__main__':
@@ -83,6 +85,29 @@ if __name__ == '__main__':
         cursor.execute('''INSERT INTO "prices" ("time", "buy", "sell", "wa_buy", "wa_sell") VALUES (?, ?, ?, ?, ?)''', (now, buy, sell, wbuy, wsell))
 
         cursor.execute('''INSERT INTO "diffs" ("time", "d1_buy", "d1_sell", "d2_buy", "d2_sell") VALUES (?, ?, ?, ?, ?)''', (now, d1_buy, d1_sell, d2_buy, d2_sell))
+
+        s_buy = []
+        s_sell = []
+
+        for values in cursor.execute('''SELECT "buy", "sell" FROM "prices" ORDER BY "time" DESC LIMIT ?''', (LMA_SAMPLES,)):
+
+            s_buy.append(values[0])
+            s_sell.append(values[1])
+
+
+        # Calculate moving averages and deltas:
+
+        b_lma = latest_moving_average(s_buy, LMA_SAMPLES)
+        b_sma = latest_moving_average(s_buy, SMA_SAMPLES)
+        b_delta = round2(b_sma - b_lma)
+
+        s_lma = latest_moving_average(s_sell, LMA_SAMPLES)
+        s_sma = latest_moving_average(s_sell, SMA_SAMPLES)
+        s_delta = round2(s_sma - s_lma)
+
+        # Store calculated values in database:
+
+        cursor.execute('''INSERT INTO "averages" ("time", "b_sma", "b_lma", "b_delta", "s_sma", "s_lma", "s_delta") VALUES (?, ?, ?, ?, ?, ?, ?)''', (now, b_sma, b_lma, b_delta, s_sma, s_lma, s_delta))
 
         conn.commit()
         conn.close()

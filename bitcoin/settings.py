@@ -31,3 +31,8 @@ BUY_PRICE_RISE_FACTOR = 100.25 / 100            # The %age of the buy price to w
 
 
 TRANSACTION_INTERVAL = 10           # The interval in seconds between updating the order in a purge or acquire
+
+# The number of samples used to calculate the short and long moving averages:
+
+SMA_SAMPLES = 10
+LMA_SAMPLES = 25
