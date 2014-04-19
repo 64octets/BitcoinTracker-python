@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
     series = pd.Series(prices)
 
-    sma = moving_average(series, 10)
-    lma = moving_average(series, 25)
+    sma = moving_average(series, 60)
+    lma = moving_average(series, 120)
 
     sma = pd.Series(sma)
     lma = pd.Series(lma)

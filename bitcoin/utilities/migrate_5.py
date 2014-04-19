@@ -26,6 +26,7 @@
 import sqlite3
 
 from bitcoin import get_db, round2
+from bitcoin.settings import SMA_SAMPLES, LMA_SAMPLES
 from bitcoin.utilities.moving_averages import moving_average
 
 
@@ -48,11 +49,11 @@ if __name__ == '__main__':
 
     print("Calculating the Short and Long Moving Averages")
 
-    b_sma = moving_average(s_buy, 10)
-    b_lma = moving_average(s_buy, 25)
+    b_sma = moving_average(s_buy, SMA_SAMPLES)
+    b_lma = moving_average(s_buy, LMA_SAMPLES)
 
-    s_sma = moving_average(s_sell, 10)
-    s_lma = moving_average(s_sell, 25)
+    s_sma = moving_average(s_sell, SMA_SAMPLES)
+    s_lma = moving_average(s_sell, LMA_SAMPLES)
 
 
     print("Writing sma and lma to database.")

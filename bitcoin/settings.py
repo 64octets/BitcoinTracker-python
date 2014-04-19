@@ -34,5 +34,5 @@ TRANSACTION_INTERVAL = 10           # The interval in seconds between updating t
 
 # The number of samples used to calculate the short and long moving averages:
 
-SMA_SAMPLES = 10
-LMA_SAMPLES = 25
+SMA_SAMPLES = 60
+LMA_SAMPLES = 120
