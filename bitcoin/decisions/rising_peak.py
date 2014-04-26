@@ -104,7 +104,7 @@ def delete():
 
 def condition(data):        # Define the condition function of the Decision
 
-    if data.btc_balance > 0:
+    if redis_client.active_rising_peak() and data.btc_balance > 0:       # We carry out the condition check only if the decision is set active in redis
 
         band = fetch()
 
@@ -149,19 +149,21 @@ def condition(data):        # Define the condition function of the Decision
 
 def action(data):       # Define the action to be carried out if the condition is met
 
-    band = fetch()
+    if redis_client.active_rising_peak():
 
-    if data.sell < band['lower']:
+        band = fetch()
 
-        log("Sell price = ${} has fallen below the band lower limit = ${}".format(data.sell, band['lower']))
+        if data.sell < band['lower']:
 
-    else:
+            log("Sell price = ${} has fallen below the band lower limit = ${}".format(data.sell, band['lower']))
 
-        log("ERROR")
-        return
+        else:
 
-    actions.purge()
-    delete()
+            log("ERROR")
+            return
+
+        actions.purge()
+        delete()
 
 
 decision = Decision(condition, action, True)

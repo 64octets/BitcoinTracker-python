@@ -41,7 +41,7 @@ def initiate_decisions():
     decisions.append( absolute_zero.decision )
     #decisions.append( minimize_loss.decision )
     #decisions.append( minimum_profit.decision )
-    #decisions.append( rising_peak.decision )
+    decisions.append( rising_peak.decision )
     #decisions.append( falling_trench.decision )
 
     return decisions
