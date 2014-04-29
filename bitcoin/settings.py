@@ -30,7 +30,7 @@ BUY_PRICE_DROP_FACTOR = 99.5 / 100              # The %age of the buy price to w
 BUY_PRICE_RISE_FACTOR = 100.25 / 100            # The %age of the buy price to which if it rises the acquire needs to reset to the new buy price otherwise we will be unable to buy btc.
 
 
-TRANSACTION_INTERVAL = 10           # The interval in seconds between updating the order in a purge or acquire
+TRANSACTION_INTERVAL = 20           # The interval in seconds between updating the order in a purge or acquire
 
 # The number of samples used to calculate the short and long moving averages:
 

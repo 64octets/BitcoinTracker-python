@@ -25,6 +25,8 @@ import bitcoin
 import bitcoin.client as client
 import bitcoin.settings as settings
 
+PRICE_DELTA = 0.1       # Amount in dollars by which the buy and sell price are offset to favor a quick acquire or purge
+
 
 def purge():
     """
@@ -52,7 +54,7 @@ def purge():
 
                 client.cancel_all_orders()
 
-                client.sell_order(btc, sell_price)
+                client.sell_order(btc, sell_price - PRICE_DELTA)      # Offer to sell at a slightly lower price than the current sell price (to sweeten the deal)
                 prev_sell_price = sell_price        # Update prev_sell_price for later comparison
 
             elif sell_price > settings.SELL_PRICE_RISE_FACTOR * prev_sell_price:
@@ -97,7 +99,7 @@ def acquire():
             print("Remaining USD: {}".format(usd))
             print("Previous buy price: {}".format(prev_buy_price))
 
-            buy_price = float(client.current_price()['buy'])
+            buy_price = float(client.current_price()['buy']) + PRICE_DELTA          # Offer to buy at slightly above the current buy price (to sweeten the deal)
             btc = bitcoin.chop_btc(amount / buy_price)              # Calculate the correctly floored (rounded) amount of btc that can be bought at the current buy price
 
             print("Current buy price: {}".format(buy_price))

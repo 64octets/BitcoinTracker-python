@@ -1,0 +1,5 @@
+# This is a file that is pulled in by ipython when it starts, running the following "default" commands to prepare ipython for BitCoin usage.
+
+import bitcoin.redis_client as rc
+import bitcoin.actions as actions
+import bitcoin.client as client
