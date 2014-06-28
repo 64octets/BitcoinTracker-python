@@ -56,7 +56,7 @@ def log(msg, newline=False):
 # anticipation of an upcoming slump.
 def condition(data):
 
-    if data.btc_balance > 0:
+    if redis_client.active_minimize_loss() and data.btc_balance > 0:
 
         if data.sell < DROP_FACTOR * data.last_buy_price:
 
@@ -70,9 +70,11 @@ def condition(data):
 
 def action(data):
 
-    log("BTC sell price has fallen below a factor of {} of original buy price. Selling.\n".format(DROP_FACTOR), True)
+    if redis_client.active_minimize_loss():
 
-    actions.purge()      # We are in a rush to off-load so we purge all BTC
+        log("BTC sell price has fallen below a factor of {} of original buy price. Selling.\n".format(DROP_FACTOR), True)
+
+        actions.purge()      # We are in a rush to off-load so we purge all BTC
 
 
 decision = Decision(condition, action, True)

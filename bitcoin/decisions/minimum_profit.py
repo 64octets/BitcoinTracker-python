@@ -55,7 +55,7 @@ def log(msg, newline=False):
 
 def condition(data):
 
-    if data.btc_balance > 0:
+    if redis_client.active_minimum_profit() and data.btc_balance > 0:
 
         if BAND_LOWER * data.last_buy_price < data.sell < BAND_UPPER * data.last_buy_price:
 
@@ -73,9 +73,11 @@ def condition(data):
 
 def action(data):
 
-    log("BTC sell price is between {}% and {}% of orig. buy price and the Max Sell Price to date exceeds {}%.\n".format(BAND_LOWER, BAND_UPPER, BAND_UPPER), True)
+    if redis_client.active_minimum_profit():
 
-    actions.purge()
+        log("BTC sell price is between {}% and {}% of orig. buy price and the Max Sell Price to date exceeds {}%.\n".format(BAND_LOWER, BAND_UPPER, BAND_UPPER), True)
+
+        actions.purge()
 
 
 decision = Decision(condition, action, True)

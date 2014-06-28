@@ -103,7 +103,7 @@ def delete():
 
 def condition(data):        # Define the condition function of the Decision
 
-    if data.usd_balance > 10:
+    if redis_client.active_falling_trench() and data.usd_balance > 10:
 
         band = fetch()
 
@@ -138,7 +138,7 @@ def condition(data):        # Define the condition function of the Decision
 
         else:               # The band is inactive
 
-            if data.avg_buy < ACTIVATION_THRESHOLD:        # Avg Buy is below Activation Threshold so we activate the band
+            if data.buy < ACTIVATION_THRESHOLD:        # Buy Price is below Activation Threshold so we activate the band
 
                 log(current_time())
                 log("Avg Buy price = ${} has fallen below the Activation Threshold = ${}".format(data.avg_buy, ACTIVATION_THRESHOLD), True)
@@ -157,19 +157,21 @@ def condition(data):        # Define the condition function of the Decision
 
 def action(data):       # Define the action to be carried out if the condition is met
 
-    band = fetch()
+    if redis_client.active_falling_trench():
 
-    if data.buy > band['upper']:
+        band = fetch()
 
-        log("Buy price = ${} has risen above the band upper limit = ${}".format(data.buy, band['upper']))
+        if data.buy > band['upper']:
 
-    else:
+            log("Buy price = ${} has risen above the band upper limit = ${}".format(data.buy, band['upper']))
 
-        log("ERROR")
-        return
+        else:
 
-    actions.acquire()
-    delete()
+            log("ERROR")
+            return
+
+        actions.acquire()
+        delete()
 
 
 decision = Decision(condition, action, True)

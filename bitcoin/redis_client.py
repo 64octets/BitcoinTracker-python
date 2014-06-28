@@ -94,29 +94,29 @@ def load():
     rds.set(KEY_MIN_PROFIT_BAND_UPPER_FACTOR, 1.02)
     rds.set(KEY_MIN_PROFIT_TRIGGER_THRESHOLD, 1.025)
 
-    rds.set(KEY_ACTIVE_ABSOLUTE_ZERO, True)
-    rds.set(KEY_ACTIVE_MINIMIZE_LOSS, True)
-    rds.set(KEY_ACTIVE_MINIMUM_PROFIT, True)
-    rds.set(KEY_ACTIVE_RISING_PEAK, True)
-    rds.set(KEY_ACTIVE_FALLING_TRENCH, True)
+    rds.set(KEY_ACTIVE_ABSOLUTE_ZERO, False)
+    rds.set(KEY_ACTIVE_MINIMIZE_LOSS, False)
+    rds.set(KEY_ACTIVE_MINIMUM_PROFIT, False)
+    rds.set(KEY_ACTIVE_RISING_PEAK, False)
+    rds.set(KEY_ACTIVE_FALLING_TRENCH, False)
 
 
 # Activation keys and functions
 
 KEY_ACTIVE_ABSOLUTE_ZERO = "active_absolute_zero"
-def active_absolute_zero(): return bool(rds.get(KEY_ACTIVE_ABSOLUTE_ZERO))
+def active_absolute_zero(): return rds.get(KEY_ACTIVE_ABSOLUTE_ZERO) == 'True'
 
 KEY_ACTIVE_MINIMIZE_LOSS = "active_minimize_loss"
-def active_minimize_loss(): return bool(rds.get(KEY_ACTIVE_MINIMIZE_LOSS))
+def active_minimize_loss(): return rds.get(KEY_ACTIVE_MINIMIZE_LOSS) == 'True'
 
 KEY_ACTIVE_MINIMUM_PROFIT = "active_min_profit"
-def active_minimum_profit(): return bool(rds.get(KEY_ACTIVE_MINIMUM_PROFIT))
+def active_minimum_profit(): return rds.get(KEY_ACTIVE_MINIMUM_PROFIT) == 'True'
 
 KEY_ACTIVE_RISING_PEAK = "active_rising_peak"
-def active_rising_peak(): return bool(rds.get(KEY_ACTIVE_RISING_PEAK))
+def active_rising_peak(): return rds.get(KEY_ACTIVE_RISING_PEAK) == 'True'
 
 KEY_ACTIVE_FALLING_TRENCH = "active_falling_trench"
-def active_falling_trench(): return bool(rds.get(KEY_ACTIVE_FALLING_TRENCH))
+def active_falling_trench(): return rds.get(KEY_ACTIVE_FALLING_TRENCH) == 'True'
 
 
 
